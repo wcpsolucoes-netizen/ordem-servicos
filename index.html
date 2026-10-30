@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="Painel de ordens de serviço da equipe.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Ordem">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <title>Ordem — Gestão de serviços</title>
+  <style>
+    :root{color-scheme:light;--ink:#172033;--muted:#758096;--line:#e7eaf0;--paper:#f5f7fb;--white:#fff;--navy:#111827;--blue:#4169e1;--blue-soft:#edf1ff;--green:#14866d;--green-soft:#e5f6f1;--amber:#a05a0a;--amber-soft:#fff3dd;--red:#bd3b49;--red-soft:#fff0f1;--shadow:0 12px 32px #1c2a4610}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.hidden{display:none!important}
+    .app{min-height:100vh}.topbar{height:72px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100vw - 1180px)/2));position:sticky;top:0;z-index:5;box-shadow:0 4px 20px #11182720}.brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:-.4px}.brand-mark{width:37px;height:37px;border-radius:12px;background:#4169e1;display:grid;place-items:center;font-size:19px}.brand small{display:block;color:#9da8bb;font-size:11px;font-weight:500;letter-spacing:.5px;text-transform:uppercase}.user-menu{display:flex;align-items:center;gap:12px}.avatar{width:37px;height:37px;background:#27344a;border-radius:50%;display:grid;place-items:center;font-weight:700}.user-label{font-size:13px;font-weight:650}.user-label small{display:block;color:#abb4c4;font-size:11px;font-weight:450}.text-button{background:none;border:0;color:#d4dbea;padding:8px;font-size:13px}.main{max-width:1180px;padding:32px 22px 64px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:26px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;color:var(--blue);font-weight:750}.welcome h1{font-size:clamp(25px,4vw,34px);line-height:1.15;letter-spacing:-1px;margin:6px 0}.welcome p{color:var(--muted);margin:7px 0 0}.button{border:0;border-radius:10px;padding:11px 16px;font-weight:650;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px}.button:hover{transform:translateY(-1px)}.primary{background:var(--blue);color:white;box-shadow:0 4px 10px #4169e133}.secondary{background:white;border:1px solid var(--line);color:var(--ink)}.danger{background:var(--red-soft);color:var(--red)}.small-button{padding:7px 10px;font-size:12px;border-radius:8px}.notice{border:1px solid #dfe6ff;background:#f0f3ff;color:#344a9b;border-radius:12px;padding:13px 15px;margin-bottom:22px;font-size:13px;display:flex;justify-content:space-between;gap:12px;align-items:center}.notice strong{display:block}.notice button{border:0;background:none;color:inherit;text-decoration:underline;font-weight:650}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:25px}.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:17px 19px;box-shadow:var(--shadow)}.stat-label{color:var(--muted);font-size:12px}.stat-value{font-size:27px;font-weight:750;letter-spacing:-.7px;margin-top:3px}.stat-mark{float:right;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--blue-soft);color:var(--blue)}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:13px}.toolbar h2{font-size:18px;margin:0;letter-spacing:-.3px}.filters{display:flex;gap:8px;align-items:center}.filters select,.field input,.field textarea,.field select{background:white;border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--ink);outline:none;width:100%}.filters select{width:auto;padding:9px 32px 9px 12px}.filters select:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:#8ba1f2;box-shadow:0 0 0 3px #4169e115}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);min-width:0}.card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.card h3{margin:8px 0 4px;font-size:17px;line-height:1.3;letter-spacing:-.3px}.card p{margin:0;color:var(--muted);font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.order-id{color:#8a93a5;font-size:11px;letter-spacing:.7px;font-weight:700}.status{border-radius:999px;padding:5px 9px;font-size:11px;font-weight:700;white-space:nowrap}.status-agendada{background:var(--blue-soft);color:#3652b4}.status-execucao{background:var(--amber-soft);color:var(--amber)}.status-concluida{background:var(--green-soft);color:var(--green)}.status-cancelada{background:var(--red-soft);color:var(--red)}.card-meta{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:14px;padding-top:12px;border-top:1px solid #f0f1f5;color:#59657a;font-size:12px}.card-meta span{display:inline-flex;align-items:center;gap:6px}.card-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.empty{grid-column:1/-1;text-align:center;border:1px dashed #d4d9e3;border-radius:14px;padding:52px 20px;color:var(--muted);background:#ffffff80}.empty-icon{font-size:28px;margin-bottom:9px}.empty strong{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+    .login-wrap{min-height:100vh;background:radial-gradient(ellipse at 82% 10%,#273755 0%,transparent 42%),var(--navy);display:grid;place-items:center;padding:24px}.login-card{width:min(430px,100%);background:white;padding:34px;border-radius:20px;box-shadow:0 25px 80px #0005}.login-card .brand{color:var(--ink);margin-bottom:28px}.login-card .brand small{color:var(--muted)}.login-card h1{font-size:26px;letter-spacing:-.7px;margin:0 0 6px}.login-card>p{color:var(--muted);font-size:14px;margin:0 0 23px}.field{margin-bottom:16px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field textarea{min-height:86px;resize:vertical}.field input[type="datetime-local"]{color-scheme:light}.form-error{color:var(--red);font-size:13px;min-height:20px;margin:0 0 9px}.login-card .button{width:100%;margin-top:5px}.login-hint{margin-top:16px!important;font-size:12px!important;background:#f5f7fb;padding:12px;border-radius:10px}
+    .modal-backdrop{position:fixed;inset:0;background:#11182780;z-index:10;display:grid;place-items:center;padding:18px}.modal{width:min(540px,100%);max-height:min(90vh,780px);overflow:auto;background:white;border-radius:17px;padding:23px;box-shadow:0 24px 70px #0004}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h2{margin:0;font-size:19px}.close{border:0;background:#f0f2f6;border-radius:50%;height:34px;width:34px;font-size:20px;color:#59657a}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 13px}.span-two{grid-column:1/-1}.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.attachment-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.attachment-list a{background:#f2f4f8;color:#36435a;padding:7px 10px;border-radius:8px;font-size:12px;text-decoration:none}.toast{position:fixed;z-index:20;bottom:22px;left:50%;transform:translateX(-50%);background:#182236;color:white;padding:12px 17px;border-radius:11px;box-shadow:0 8px 28px #0003;font-size:13px;max-width:calc(100% - 32px)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:720px){.topbar{height:64px;padding:0 16px}.main{padding:25px 16px 45px}.welcome{align-items:flex-start;flex-direction:column}.welcome .button{width:100%}.stats{gap:9px}.stat{padding:13px}.stat-value{font-size:23px}.cards{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}.filters{width:100%}.filters select{flex:1;min-width:0}.notice{align-items:flex-start}.user-label{display:none}.form-grid{grid-template-columns:1fr}.span-two{grid-column:auto}}@media(max-width:390px){.stats{grid-template-columns:1fr}.stat{display:flex;align-items:center;justify-content:space-between}.stat-value{margin:0}.login-card{padding:25px}}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="./config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  (() => {
+    "use strict";
+    const MEMBERS=[
+      {id:"theo",name:"Theo",admin:false,tech:true},
+      {id:"wainy",name:"Wainy",admin:true,tech:false},
+      {id:"jenifer",name:"Jênifer",admin:true,tech:false},
+      {id:"rayan",name:"Rayan",admin:true,tech:true},
+      {id:"cristiano",name:"Cristiano",admin:true,tech:true},
+      {id:"otavio",name:"Otavio",admin:false,tech:true},
+      {id:"pedro",name:"Pedro",admin:false,tech:true}
+    ];
+    const CFG=window.APP_CONFIG||{};
+    const online=Boolean(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase);
+    const sb=online?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY):null;
+    const root=document.getElementById("root");
+    const escapeHtml=(s="")=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const memberById=id=>MEMBERS.find(m=>m.id===id);
+    let current=null,orders=[],activeFilter="all",toastTimer,refreshTimer;
+    const localKey="ordem-app-state-v1";
+    const getLocal=()=>{try{return JSON.parse(localStorage.getItem(localKey))||{pins:{},orders:[]}}catch{return{pins:{},orders:[]}}};
+    const saveLocal=s=>localStorage.setItem(localKey,JSON.stringify(s));
+    const notify=msg=>{let el=document.querySelector(".toast");if(!el){el=document.createElement("div");el.className="toast";document.body.appendChild(el)}el.textContent=msg;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.remove(),3200)};
+    const roleLabel=m=>m.admin&&m.tech?"Admin · Técnico":m.admin?"Administrador":"Técnico";
+    const statusLabel=s=>({scheduled:"Agendada",in_progress:"Em execução",completed:"Concluída",cancelled:"Cancelada"})[s]||s;
+    const fmtDate=value=>{if(!value)return "Sem data definida";return new Intl.DateTimeFormat("pt-BR",{dateStyle:"medium",timeStyle:"short",timeZone:"America/Sao_Paulo"}).format(new Date(value))};
+    const nowLocal=()=>{const d=new Date(Date.now()-new Date().getTimezoneOffset()*60000);return d.toISOString().slice(0,16)};
+    const statusClass=s=>({scheduled:"status-agendada",in_progress:"status-execucao",completed:"status-concluida",cancelled:"status-cancelada"})[s]||"";
+    const initialize=async()=>{
+      if("serviceWorker" in navigator){
+        try{await navigator.serviceWorker.register("./sw.js")}
+        catch(error){console.error("Falha ao registrar o service worker:",error)}
+      }
+      if(online){const {data:{session}}=await sb.auth.getSession();if(session){current=memberById(session.user.app_metadata?.member_id);if(current){await loadOrders();renderApp();startRefresh();await enableNotifications(false);return}}}
+      renderLogin();
+    };
+    const renderLogin=()=>{root.innerHTML=`<main class="login-wrap"><section class="login-card"><div class="brand"><div class="brand-mark">▦</div><div>ordem<small>Gestão de serviços</small></div></div><h1>Bem-vindo à equipe</h1><p>Escolha seu perfil para acessar as ordens de serviço.</p><form id="loginForm"><div class="field"><label for="member">Quem é você?</label><select id="member" required><option value="">Selecione seu nome</option>${MEMBERS.map(m=>`<option value="${m.id}">${escapeHtml(m.name)} · ${roleLabel(m)}</option>`).join("")}</select></div><div class="field"><label for="pin">PIN de 4 dígitos</label><input id="pin" inputmode="numeric" autocomplete="current-password" maxlength="4" pattern="[0-9]{4}" placeholder="••••" required></div><div id="inviteField" class="field hidden"><label for="invite">Código de ativação individual</label><input id="invite" autocomplete="off" placeholder="Informe o código recebido"></div><label style="display:flex;gap:8px;align-items:center;font-size:13px;margin:0 0 16px"><input id="firstAccess" type="checkbox"> Primeiro acesso? Cadastrar meu PIN</label><p class="form-error" id="loginError"></p><button class="button primary" type="submit" id="loginButton">Entrar</button></form><p class="login-hint">${online?"Seu acesso é protegido pelo PIN e pelo código de ativação individual no primeiro cadastro.":"Demonstração local: cada aparelho mantém seus próprios dados. Configure o Supabase para compartilhar O.S. entre a equipe."}</p></section></main>`;
+      const first=document.getElementById("firstAccess");
+      first.addEventListener("change",()=>document.getElementById("inviteField").classList.toggle("hidden",!first.checked||online===false));
+      document.getElementById("loginForm").addEventListener("submit",handleLogin);
+    };
+    const handleLogin=async ev=>{
+      ev.preventDefault();const id=document.getElementById("member").value,pin=document.getElementById("pin").value,isFirst=document.getElementById("firstAccess").checked;
+      const error=document.getElementById("loginError"),button=document.getElementById("loginButton");error.textContent="";
+      if(!id||!/^\d{4}$/.test(pin)){error.textContent="Selecione seu perfil e informe um PIN de 4 dígitos.";return}
+      button.disabled=true;button.textContent="Aguarde…";
+      try{
+        if(online){
+          const email=`member+${id}@ordem.example.com`,password=`OS-${pin}`;
+          if(isFirst){
+            const invite=document.getElementById("invite").value.trim();
+            if(!invite)throw Error("Informe seu código individual de ativação.");
+            const {error:setupError}=await sb.functions.invoke("setup-member",{body:{member_id:id,pin,invite_code:invite}});
+            if(setupError)throw setupError;
+          }
+          const {data,error:authError}=await sb.auth.signInWithPassword({email,password});if(authError)throw authError;
+          current=memberById(data.user.app_metadata?.member_id);
+          if(!current)throw Error("Perfil não reconhecido. Entre em contato com o administrador.");
+          await loadOrders();renderApp();startRefresh();await enableNotifications(false);
+        }else{
+          const state=getLocal();
+          if(isFirst){
+            if(state.pins[id])throw Error("Este perfil já possui PIN neste aparelho.");
+            state.pins[id]=pin;saveLocal(state)
+          }else if(!state.pins[id])throw Error("Este perfil ainda não tem PIN neste aparelho. Marque Primeiro acesso.");
+          else if(state.pins[id]!==pin)throw Error("PIN incorreto.");
+          current=memberById(id);orders=state.orders;renderApp()
+        }
+      }catch(e){error.textContent=e.message||"Não foi possível entrar.";button.disabled=false;button.textContent="Entrar"}
+    };
+    const loadOrders=async()=>{
+      if(!online){orders=getLocal().orders;return}
+      const {data,error}=await sb.from("work_orders").select("*,attachments(id,name,object_path,created_at)").order("scheduled_at",{ascending:true,nullsFirst:false});
+      if(error)throw error;orders=data||[];
+    };
+    const startRefresh=()=>{
+      clearInterval(refreshTimer);
+      if(!online)return;
+      refreshTimer=setInterval(async()=>{
+        if(document.visibilityState!=="visible"||document.querySelector(".modal-backdrop"))return;
+        try{await loadOrders();renderApp()}
+        catch(error){console.error("Falha ao atualizar ordens:",error);notify("Não foi possível atualizar as O.S.")}
+      },30000);
+    };
+    const renderApp=()=>{
+      const visible=orders.filter(o=>activeFilter==="all"||o.status===activeFilter).sort((a,b)=>new Date(a.scheduled_at||"9999").getTime()-new Date(b.scheduled_at||"9999").getTime());
+      const isAdmin=current.admin;const canCreate=isAdmin;
+      const waiting=orders.filter(o=>o.status==="scheduled").length,progress=orders.filter(o=>o.status==="in_progress").length,done=orders.filter(o=>o.status==="completed").length;
+      root.innerHTML=`<div class="app"><header class="topbar"><div class="brand"><div class="brand-mark">▦</div><div>ordem<small>Gestão de serviços</small></div></div><div class="user-menu"><div class="avatar">${escapeHtml(current.name.slice(0,1))}</div><div class="user-label">${escapeHtml(current.name)}<small>${roleLabel(current)}</small></div><button class="text-button" id="logout">Sair</button></div></header><main class="main"><section class="welcome"><div><div class="eyebrow">Painel da equipe</div><h1>Olá, ${escapeHtml(current.name)} 👋</h1><p>Acompanhe os serviços e mantenha tudo em ordem.</p></div>${canCreate?'<button class="button primary" id="newOrder">＋ Nova ordem de serviço</button>':""}</section>${online?"":'<div class="notice"><div><strong>Modo demonstração local</strong>Dados ficam somente neste aparelho. Configure Supabase antes de publicar para a equipe.</div></div>'}<div id="notifyBanner"></div><section class="stats"><article class="stat"><span class="stat-mark">◷</span><div class="stat-label">Agendadas</div><div class="stat-value">${waiting}</div></article><article class="stat"><span class="stat-mark" style="background:var(--amber-soft);color:var(--amber)">↗</span><div class="stat-label">Em execução</div><div class="stat-value">${progress}</div></article><article class="stat"><span class="stat-mark" style="background:var(--green-soft);color:var(--green)">✓</span><div class="stat-label">Concluídas</div><div class="stat-value">${done}</div></article></section><section><div class="toolbar"><h2>Ordens de serviço <span style="color:var(--muted);font-weight:500">(${visible.length})</span></h2><div class="filters"><label class="sr-only" for="filter">Filtrar ordens</label><select id="filter"><option value="all">Todas as ordens</option><option value="scheduled">Agendadas</option><option value="in_progress">Em execução</option><option value="completed">Concluídas</option><option value="cancelled">Canceladas</option></select></div></div><div class="cards">${visible.length?visible.map(renderOrder).join(""):'<div class="empty"><div class="empty-icon">✦</div><strong>Nenhuma ordem por aqui</strong>Quando houver uma O.S., ela aparecerá nesta lista.</div>'}</div></section></main></div>`;
+      document.getElementById("filter").value=activeFilter;
+      document.getElementById("filter").addEventListener("change",e=>{activeFilter=e.target.value;renderApp()});
+      document.getElementById("logout").addEventListener("click",logout);
+      if(canCreate)document.getElementById("newOrder").addEventListener("click",showCreate);
+      document.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>handleAction(b.dataset.action,b.dataset.id)));
+      document.querySelectorAll("[data-file]").forEach(a=>a.addEventListener("click",async ev=>{
+        ev.preventDefault();
+        try {
+          if(!online){window.open(a.dataset.file,"_blank","noopener");return}
+          const {data,error}=await sb.storage.from("os-attachments").createSignedUrl(a.dataset.file,60);
+          if(error)throw error;
+          window.location.assign(data.signedUrl);
+        } catch(e) { notify(e.message||"Não foi possível abrir o anexo.") }
+      }));
+      showNotificationBanner().catch(error=>console.error("Falha ao verificar inscrição de notificações:",error));
+      handleDeepLink();
+    };
+    const renderOrder=o=>{
+      const assignee=memberById(o.assigned_to)?.name||o.assignee_name||"Sem responsável";
+      const mayRun=current.tech&&current.id===o.assigned_to&&o.status==="scheduled";
+      const mayFinish=current.tech&&current.id===o.assigned_to&&o.status==="in_progress";
+      const mayCancel=current.tech&&!["completed","cancelled"].includes(o.status);
+      const attachments=o.attachments||[];
+      return `<article class="card"><div class="card-head"><div><div class="order-id">${escapeHtml((o.id||"").toString().slice(0,8).toUpperCase())}</div><h3>${escapeHtml(o.title)}</h3><p>${escapeHtml(o.description||"Sem descrição.")}</p></div><span class="status ${statusClass(o.status)}">${statusLabel(o.status)}</span></div><div class="card-meta"><span>◷ ${fmtDate(o.scheduled_at)}</span><span>♙ ${escapeHtml(assignee)}</span>${o.location?`<span>⌖ ${escapeHtml(o.location)}</span>`:""}</div>${attachments.length?`<div class="attachment-list">${attachments.map(a=>`<a href="#" data-file="${escapeHtml(a.object_path||a.data_url||"")}" data-name="${escapeHtml(a.name)}">▧ ${escapeHtml(a.name)}</a>`).join("")}</div>`:""}<div class="card-actions">${mayRun?`<button class="button primary small-button" data-action="start" data-id="${o.id}">▶ Executar</button>`:""}${mayFinish?`<button class="button primary small-button" data-action="finish" data-id="${o.id}">✓ Finalizar</button>`:""}${isNotTerminal(o.status)?`<button class="button secondary small-button" data-action="attach" data-id="${o.id}">＋ Anexar</button>`:""}${mayCancel?`<button class="button danger small-button" data-action="cancel" data-id="${o.id}">Cancelar</button>`:""}</div></article>`;
+    };
+    function isNotTerminal(s){return !["completed","cancelled"].includes(s)}
+    const showCreate=()=>{
+      const options=MEMBERS.filter(m=>m.tech).map(m=>`<option value="${m.id}">${escapeHtml(m.name)}</option>`).join("");
+      modal(`<div class="modal-head"><h2>Nova ordem de serviço</h2><button class="close" type="button" data-close>×</button></div><form id="createForm"><div class="form-grid"><div class="field span-two"><label for="title">Serviço</label><input id="title" maxlength="120" placeholder="Ex.: Manutenção preventiva" required></div><div class="field span-two"><label for="description">Descrição</label><textarea id="description" maxlength="2000" placeholder="Detalhes importantes para a execução"></textarea></div><div class="field"><label for="assignee">Técnico responsável</label><select id="assignee" required>${options}</select></div><div class="field"><label for="scheduled">Data e horário</label><input id="scheduled" type="datetime-local" value="${nowLocal()}" required></div><div class="field span-two"><label for="location">Local (opcional)</label><input id="location" maxlength="200" placeholder="Endereço ou setor"></div></div><p class="form-error" id="modalError"></p><div class="modal-footer"><button type="button" class="button secondary" data-close>Voltar</button><button type="submit" class="button primary">Criar O.S.</button></div></form>`);
+      document.getElementById("createForm").addEventListener("submit",createOrder);
+    };
+    const createOrder=async ev=>{
+      ev.preventDefault();const payload={title:document.getElementById("title").value.trim(),description:document.getElementById("description").value.trim(),assigned_to:document.getElementById("assignee").value,scheduled_at:new Date(document.getElementById("scheduled").value).toISOString(),location:document.getElementById("location").value.trim()};
+      try{if(online){const {error}=await sb.rpc("create_work_order",payload);if(error)throw error;await loadOrders()}else{const s=getLocal();s.orders.push({id:crypto.randomUUID(),...payload,created_by:current.id,status:"scheduled",attachments:[]});saveLocal(s);orders=s.orders}closeModal();renderApp();notify("Ordem de serviço criada.");}catch(e){document.getElementById("modalError").textContent=e.message||"Erro ao criar a ordem."}
+    };
+    const handleAction=async(action,id)=>{
+      if(action==="attach"){attachFile(id);return}
+      const mapping={start:["in_progress","Iniciar execução desta O.S.?"],finish:["completed","Marcar esta O.S. como concluída?"],cancel:["cancelled","Cancelar esta O.S.?"]};
+      const [status,question]=mapping[action]||[];if(!status||!confirm(question))return;
+      try{if(online){const {error}=await sb.rpc("set_work_order_status",{p_order_id:id,p_status:status});if(error)throw error;await loadOrders()}else{const s=getLocal();const o=s.orders.find(x=>x.id===id);o.status=status;saveLocal(s);orders=s.orders}
+        renderApp();notify(status==="completed"?"O.S. finalizada.":status==="cancelled"?"O.S. cancelada.":"Execução iniciada.");
+      }catch(e){notify(e.message||"Não foi possível atualizar a O.S.")}
+    };
+    const attachFile=async id=>{
+      const input=document.createElement("input");input.type="file";input.accept="image/*,.pdf,.txt,.doc,.docx,.xls,.xlsx";input.onchange=async()=>{
+        const file=input.files[0];if(!file)return;if(file.size>8*1024*1024){notify("O arquivo deve ter no máximo 8 MB.");return}
+        try{if(online){const path=`${id}/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g,"_")}`;const {error:uploadError}=await sb.storage.from("os-attachments").upload(path,file,{upsert:false});if(uploadError)throw uploadError;const {error}=await sb.from("attachments").insert({work_order_id:id,name:file.name,object_path:path,uploaded_by:current.id});if(error)throw error;await loadOrders()}else{const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(file)});const s=getLocal();const o=s.orders.find(x=>x.id===id);o.attachments=o.attachments||[];o.attachments.push({id:crypto.randomUUID(),name:file.name,data_url:data});saveLocal(s);orders=s.orders}
+          renderApp();notify("Arquivo anexado.")
+        }catch(e){notify(e.message||"Não foi possível anexar o arquivo.")}
+      };input.click();
+    };
+    const modal=html=>{const wrap=document.createElement("div");wrap.className="modal-backdrop";wrap.innerHTML=`<section class="modal" role="dialog" aria-modal="true">${html}</section>`;wrap.addEventListener("click",e=>{if(e.target===wrap||e.target.closest("[data-close]"))wrap.remove()});document.body.appendChild(wrap)};
+    const closeModal=()=>document.querySelector(".modal-backdrop")?.remove();
+    const logout=async()=>{
+      clearInterval(refreshTimer);
+      if(online){
+        try{
+          const registration=await navigator.serviceWorker.getRegistration();
+          const subscription=registration?.pushManager?await registration.pushManager.getSubscription():null;
+          if(subscription){
+            const {error}=await sb.from("push_subscriptions").delete().eq("endpoint",subscription.endpoint);
+            if(error)throw error;
+            await subscription.unsubscribe();
+          }
+        }catch(error){notify(`Não foi possível remover este aparelho dos avisos: ${error.message||"erro de conexão"}`)}
+        await sb.auth.signOut();
+      }
+      current=null;orders=[];activeFilter="all";renderLogin()
+    };
+    const showNotificationBanner=async()=>{
+      if(!online||!("Notification" in window))return;
+      const box=document.getElementById("notifyBanner");if(!box)return;
+      if(Notification.permission==="granted"&&"serviceWorker" in navigator){
+        const registration=await navigator.serviceWorker.ready;
+        if(registration.pushManager&&await registration.pushManager.getSubscription())return;
+      }
+      box.innerHTML='<div class="notice"><div><strong>Ative os avisos no celular</strong>Receba um lembrete 10 minutos antes das O.S. atribuídas a você.</div><button id="enableNotifications">Ativar avisos</button></div>';
+      document.getElementById("enableNotifications").addEventListener("click",()=>enableNotifications(true));
+    };
+    const enableNotifications=async(showMessage=true)=>{
+      if(!online||!CFG.VAPID_PUBLIC_KEY){if(showMessage)notify("Conclua a configuração de notificações no Supabase.");return}
+      if(!("Notification" in window)||!("serviceWorker" in navigator)){if(showMessage)notify("Este navegador não oferece suporte a notificações.");return}
+      try{
+        if(Notification.permission!=="granted"&&!showMessage)return;
+        const permission=Notification.permission==="granted"?"granted":await Notification.requestPermission();if(permission!=="granted"){if(showMessage)notify("Permissão de notificação não concedida.");return}
+        const registration=await navigator.serviceWorker.ready;
+        const key=Uint8Array.from(atob(CFG.VAPID_PUBLIC_KEY.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0));
+        const subscription=await registration.pushManager.getSubscription()||await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
+        const json=subscription.toJSON();
+        const {error}=await sb.from("push_subscriptions").upsert({member_id:current.id,endpoint:json.endpoint,p256dh:json.keys.p256dh,auth:json.keys.auth},{onConflict:"endpoint"});
+        if(error)throw error;
+        const banner=document.getElementById("notifyBanner");if(banner)banner.innerHTML="";
+        if(showMessage)notify("Avisos ativados neste aparelho.");
+      }catch(e){if(showMessage)notify(e.message||"Não foi possível ativar os avisos.")}
+    };
+    const handleDeepLink=async()=>{
+      const url=new URL(location.href),action=url.searchParams.get("action"),id=url.searchParams.get("id");if(!action||!id||!online)return;
+      url.searchParams.delete("action");url.searchParams.delete("id");history.replaceState({}, "",url);
+      if(action==="execute"){await handleAction("start",id)}
+      if(action==="snooze"){const {error}=await sb.rpc("snooze_order_reminder",{p_order_id:id});if(error)notify(error.message);else notify("Lembrete adiado por 10 minutos.")}
+    };
+    initialize().catch(e=>{root.innerHTML=`<main class="login-wrap"><section class="login-card"><h1>Não foi possível carregar</h1><p>${escapeHtml(e.message||"Verifique sua conexão e configuração.")}</p><button class="button secondary" onclick="location.reload()">Tentar novamente</button></section></main>`});
+  })();
+  </script>
+</body>
+</html>
