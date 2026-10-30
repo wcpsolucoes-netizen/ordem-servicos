@@ -70,3 +70,9 @@ As notificações push são enviadas cerca de 10 minutos antes, considerando o f
 - **Theo, Otavio e Pedro:** técnicos; executam e finalizam O.S. atribuídas a eles, anexam arquivos e podem cancelar O.S.
 
 Os arquivos anexados têm limite de 8 MB e ficam no bucket privado do Supabase Storage. Todos os membros autenticados podem consultar as O.S. da equipe.
+
+Administradores também podem editar os dados de qualquer O.S. sem alterar o status; as mudanças ficam registradas no histórico da ordem. O histórico inclui criação, edição, anexos e mudanças de status. A tela da O.S. mostra o agendamento, o início da execução, a conclusão e o tempo transcorrido; ao finalizar, o tempo é congelado como a duração total entre início e fim. Ordens iniciadas antes desta atualização não têm um horário de início retroativo, então a duração só será calculada para execuções iniciadas depois da migração. Os lembretes agendados são enviados ao técnico responsável e a todos os administradores que ativarem notificações.
+
+### Atualização do banco para auditoria e duração
+
+Se o schema original já foi aplicado, execute uma única vez o script `supabase/migrations/20260610_admin_auditoria_etapas.sql` no SQL Editor do Supabase. Ele é uma migração incremental e não apaga as ordens existentes. Não é necessário executar novamente o schema inteiro.

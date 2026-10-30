@@ -5,7 +5,10 @@ self.addEventListener("push",event=>{
   try{payload={...payload,...event.data.json()}}catch{}
   event.waitUntil(self.registration.showNotification(payload.title,{
     body:payload.body,icon:"./icon.svg",badge:"./icon.svg",tag:`os-${payload.id}`,
-    data:{id:payload.id,url:payload.url||"./"},actions:[{action:"execute",title:"Executar"},{action:"snooze",title:"Lembre-me mais tarde"}]
+    data:{id:payload.id,url:payload.url||"./"},actions:[
+      ...(payload.canExecute?[{action:"execute",title:"Executar"}]:[]),
+      {action:"snooze",title:"Lembre-me mais tarde"}
+    ]
   }));
 });
 self.addEventListener("notificationclick",event=>{

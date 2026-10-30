@@ -28,7 +28,7 @@
   <script>
   (() => {
     "use strict";
-    const MEMBERS=[
+    let MEMBERS=[
       {id:"theo",name:"Theo",admin:false,tech:true},
       {id:"wainy",name:"Wainy",admin:true,tech:false},
       {id:"jenifer",name:"Jênifer",admin:true,tech:false},
@@ -58,8 +58,15 @@
         try{await navigator.serviceWorker.register("./sw.js")}
         catch(error){console.error("Falha ao registrar o service worker:",error)}
       }
+      if(online)await loadMemberDirectory();
       if(online){const {data:{session}}=await sb.auth.getSession();if(session){current=memberById(session.user.app_metadata?.member_id);if(current){await loadOrders();renderApp();startRefresh();await enableNotifications(false);return}}}
       renderLogin();
+    };
+    const loadMemberDirectory=async()=>{
+      const {data,error}=await sb.rpc("get_member_directory");
+      if(error)throw error;
+      if(!Array.isArray(data)||data.length===0)throw Error("A equipe não foi carregada. Aplique a migração de equipe antes de entrar.");
+      MEMBERS=data.map(m=>({id:m.id,name:m.display_name,admin:m.is_admin,tech:m.is_technician}));
     };
     const renderLogin=()=>{root.innerHTML=`<main class="login-wrap"><section class="login-card"><div class="brand"><div class="brand-mark">▦</div><div>ordem<small>Gestão de serviços</small></div></div><h1>Bem-vindo à equipe</h1><p>Escolha seu perfil para acessar as ordens de serviço.</p><form id="loginForm"><div class="field"><label for="member">Quem é você?</label><select id="member" required><option value="">Selecione seu nome</option>${MEMBERS.map(m=>`<option value="${m.id}">${escapeHtml(m.name)} · ${roleLabel(m)}</option>`).join("")}</select></div><div class="field"><label for="pin">PIN de 4 dígitos</label><input id="pin" inputmode="numeric" autocomplete="current-password" maxlength="4" pattern="[0-9]{4}" placeholder="••••" required></div><div id="inviteField" class="field hidden"><label for="invite">Código de ativação individual</label><input id="invite" autocomplete="off" placeholder="Informe o código recebido"></div><label style="display:flex;gap:8px;align-items:center;font-size:13px;margin:0 0 16px"><input id="firstAccess" type="checkbox"> Primeiro acesso? Cadastrar meu PIN</label><p class="form-error" id="loginError"></p><button class="button primary" type="submit" id="loginButton">Entrar</button></form><p class="login-hint">${online?"Seu acesso é protegido pelo PIN e pelo código de ativação individual no primeiro cadastro.":"Demonstração local: cada aparelho mantém seus próprios dados. Configure o Supabase para compartilhar O.S. entre a equipe."}</p></section></main>`;
       const first=document.getElementById("firstAccess");
@@ -113,12 +120,15 @@
       const visible=orders.filter(o=>activeFilter==="all"||o.status===activeFilter).sort((a,b)=>new Date(a.scheduled_at||"9999").getTime()-new Date(b.scheduled_at||"9999").getTime());
       const isAdmin=current.admin;const canCreate=isAdmin;
       const waiting=orders.filter(o=>o.status==="scheduled").length,progress=orders.filter(o=>o.status==="in_progress").length,done=orders.filter(o=>o.status==="completed").length;
-      root.innerHTML=`<div class="app"><header class="topbar"><div class="brand"><div class="brand-mark">▦</div><div>ordem<small>Gestão de serviços</small></div></div><div class="user-menu"><div class="avatar">${escapeHtml(current.name.slice(0,1))}</div><div class="user-label">${escapeHtml(current.name)}<small>${roleLabel(current)}</small></div><button class="text-button" id="logout">Sair</button></div></header><main class="main"><section class="welcome"><div><div class="eyebrow">Painel da equipe</div><h1>Olá, ${escapeHtml(current.name)} 👋</h1><p>Acompanhe os serviços e mantenha tudo em ordem.</p></div>${canCreate?'<button class="button primary" id="newOrder">＋ Nova ordem de serviço</button>':""}</section>${online?"":'<div class="notice"><div><strong>Modo demonstração local</strong>Dados ficam somente neste aparelho. Configure Supabase antes de publicar para a equipe.</div></div>'}<div id="notifyBanner"></div><section class="stats"><article class="stat"><span class="stat-mark">◷</span><div class="stat-label">Agendadas</div><div class="stat-value">${waiting}</div></article><article class="stat"><span class="stat-mark" style="background:var(--amber-soft);color:var(--amber)">↗</span><div class="stat-label">Em execução</div><div class="stat-value">${progress}</div></article><article class="stat"><span class="stat-mark" style="background:var(--green-soft);color:var(--green)">✓</span><div class="stat-label">Concluídas</div><div class="stat-value">${done}</div></article></section><section><div class="toolbar"><h2>Ordens de serviço <span style="color:var(--muted);font-weight:500">(${visible.length})</span></h2><div class="filters"><label class="sr-only" for="filter">Filtrar ordens</label><select id="filter"><option value="all">Todas as ordens</option><option value="scheduled">Agendadas</option><option value="in_progress">Em execução</option><option value="completed">Concluídas</option><option value="cancelled">Canceladas</option></select></div></div><div class="cards">${visible.length?visible.map(renderOrder).join(""):'<div class="empty"><div class="empty-icon">✦</div><strong>Nenhuma ordem por aqui</strong>Quando houver uma O.S., ela aparecerá nesta lista.</div>'}</div></section></main></div>`;
+      root.innerHTML=`<div class="app"><header class="topbar"><div class="brand"><div class="brand-mark">▦</div><div>ordem<small>Gestão de serviços</small></div></div><div class="user-menu"><div class="avatar">${escapeHtml(current.name.slice(0,1))}</div><div class="user-label">${escapeHtml(current.name)}<small>${roleLabel(current)}</small></div>${isAdmin?'<button class="text-button" id="team">Equipe</button>':""}<button class="text-button" id="logout">Sair</button></div></header><main class="main"><section class="welcome"><div><div class="eyebrow">Painel da equipe</div><h1>Olá, ${escapeHtml(current.name)} 👋</h1><p>Acompanhe os serviços e mantenha tudo em ordem.</p></div>${canCreate?'<button class="button primary" id="newOrder">＋ Nova ordem de serviço</button>':""}</section>${online?"":'<div class="notice"><div><strong>Modo demonstração local</strong>Dados ficam somente neste aparelho. Configure Supabase antes de publicar para a equipe.</div></div>'}<div id="notifyBanner"></div><section class="stats"><article class="stat"><span class="stat-mark">◷</span><div class="stat-label">Agendadas</div><div class="stat-value">${waiting}</div></article><article class="stat"><span class="stat-mark" style="background:var(--amber-soft);color:var(--amber)">↗</span><div class="stat-label">Em execução</div><div class="stat-value">${progress}</div></article><article class="stat"><span class="stat-mark" style="background:var(--green-soft);color:var(--green)">✓</span><div class="stat-label">Concluídas</div><div class="stat-value">${done}</div></article></section><section><div class="toolbar"><h2>Ordens de serviço <span style="color:var(--muted);font-weight:500">(${visible.length})</span></h2><div class="filters"><label class="sr-only" for="filter">Filtrar ordens</label><select id="filter"><option value="all">Todas as ordens</option><option value="scheduled">Agendadas</option><option value="in_progress">Em execução</option><option value="completed">Concluídas</option><option value="cancelled">Canceladas</option></select></div></div><div class="cards">${visible.length?visible.map(renderOrder).join(""):'<div class="empty"><div class="empty-icon">✦</div><strong>Nenhuma ordem por aqui</strong>Quando houver uma O.S., ela aparecerá nesta lista.</div>'}</div></section></main></div>`;
       document.getElementById("filter").value=activeFilter;
       document.getElementById("filter").addEventListener("change",e=>{activeFilter=e.target.value;renderApp()});
       document.getElementById("logout").addEventListener("click",logout);
       if(canCreate)document.getElementById("newOrder").addEventListener("click",showCreate);
+      if(isAdmin)document.getElementById("team").addEventListener("click",showTeam);
       document.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>handleAction(b.dataset.action,b.dataset.id)));
+      document.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>showEdit(b.dataset.edit)));
+      document.querySelectorAll("[data-audit]").forEach(b=>b.addEventListener("click",()=>showAudit(b.dataset.audit)));
       document.querySelectorAll("[data-file]").forEach(a=>a.addEventListener("click",async ev=>{
         ev.preventDefault();
         try {
@@ -136,8 +146,15 @@
       const mayRun=current.tech&&current.id===o.assigned_to&&o.status==="scheduled";
       const mayFinish=current.tech&&current.id===o.assigned_to&&o.status==="in_progress";
       const mayCancel=current.tech&&!["completed","cancelled"].includes(o.status);
+      const mayEdit=current.admin;
       const attachments=o.attachments||[];
-      return `<article class="card"><div class="card-head"><div><div class="order-id">${escapeHtml((o.id||"").toString().slice(0,8).toUpperCase())}</div><h3>${escapeHtml(o.title)}</h3><p>${escapeHtml(o.description||"Sem descrição.")}</p></div><span class="status ${statusClass(o.status)}">${statusLabel(o.status)}</span></div><div class="card-meta"><span>◷ ${fmtDate(o.scheduled_at)}</span><span>♙ ${escapeHtml(assignee)}</span>${o.location?`<span>⌖ ${escapeHtml(o.location)}</span>`:""}</div>${attachments.length?`<div class="attachment-list">${attachments.map(a=>`<a href="#" data-file="${escapeHtml(a.object_path||a.data_url||"")}" data-name="${escapeHtml(a.name)}">▧ ${escapeHtml(a.name)}</a>`).join("")}</div>`:""}<div class="card-actions">${mayRun?`<button class="button primary small-button" data-action="start" data-id="${o.id}">▶ Executar</button>`:""}${mayFinish?`<button class="button primary small-button" data-action="finish" data-id="${o.id}">✓ Finalizar</button>`:""}${isNotTerminal(o.status)?`<button class="button secondary small-button" data-action="attach" data-id="${o.id}">＋ Anexar</button>`:""}${mayCancel?`<button class="button danger small-button" data-action="cancel" data-id="${o.id}">Cancelar</button>`:""}</div></article>`;
+      const elapsed=o.elapsed_seconds??(o.started_at&&o.status==="in_progress"?Math.max(0,Math.floor((Date.now()-new Date(o.started_at).getTime())/1000)):null);
+      const timeline=`<div class="card-meta" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px"><span>◷ Agendada<br>${fmtDate(o.scheduled_at)}</span><span>▶ Início<br>${o.started_at?fmtDate(o.started_at):"Aguardando"}</span><span>✓ Fim<br>${o.completed_at?fmtDate(o.completed_at):o.status==="cancelled"?"Cancelada":"Em aberto"}</span><span>⏱ Tempo de execução<br>${elapsed!==null?formatDuration(elapsed):"—"}</span></div>`;
+      return `<article class="card"><div class="card-head"><div><div class="order-id">${escapeHtml((o.id||"").toString().slice(0,8).toUpperCase())}</div><h3>${escapeHtml(o.title)}</h3><p>${escapeHtml(o.description||"Sem descrição.")}</p></div><span class="status ${statusClass(o.status)}">${statusLabel(o.status)}</span></div><div class="card-meta"><span>♙ ${escapeHtml(assignee)}</span>${o.location?`<span>⌖ ${escapeHtml(o.location)}</span>`:""}</div>${timeline}${attachments.length?`<div class="attachment-list">${attachments.map(a=>`<a href="#" data-file="${escapeHtml(a.object_path||a.data_url||"")}" data-name="${escapeHtml(a.name)}">▧ ${escapeHtml(a.name)}</a>`).join("")}</div>`:""}<div class="card-actions">${mayRun?`<button class="button primary small-button" data-action="start" data-id="${o.id}">▶ Executar</button>`:""}${mayFinish?`<button class="button primary small-button" data-action="finish" data-id="${o.id}">✓ Finalizar</button>`:""}${isNotTerminal(o.status)?`<button class="button secondary small-button" data-action="attach" data-id="${o.id}">＋ Anexar</button>`:""}${mayCancel?`<button class="button danger small-button" data-action="cancel" data-id="${o.id}">Cancelar</button>`:""}${mayEdit?`<button class="button secondary small-button" data-edit="${o.id}">✎ Editar</button>`:""}${current.admin?`<button class="button secondary small-button" data-audit="${o.id}">◷ Histórico</button>`:""}</div></article>`;
+    };
+    const formatDuration=seconds=>{
+      const total=Math.max(0,Math.floor(seconds)),hours=Math.floor(total/3600),minutes=Math.floor((total%3600)/60),remaining=total%60;
+      return [hours?`${hours}h`:"",minutes?`${minutes}min`:"",remaining||(!hours&&!minutes)?`${remaining}s`:""].filter(Boolean).join(" ");
     };
     function isNotTerminal(s){return !["completed","cancelled"].includes(s)}
     const showCreate=()=>{
@@ -145,15 +162,67 @@
       modal(`<div class="modal-head"><h2>Nova ordem de serviço</h2><button class="close" type="button" data-close>×</button></div><form id="createForm"><div class="form-grid"><div class="field span-two"><label for="title">Serviço</label><input id="title" maxlength="120" placeholder="Ex.: Manutenção preventiva" required></div><div class="field span-two"><label for="description">Descrição</label><textarea id="description" maxlength="2000" placeholder="Detalhes importantes para a execução"></textarea></div><div class="field"><label for="assignee">Técnico responsável</label><select id="assignee" required>${options}</select></div><div class="field"><label for="scheduled">Data e horário</label><input id="scheduled" type="datetime-local" value="${nowLocal()}" required></div><div class="field span-two"><label for="location">Local (opcional)</label><input id="location" maxlength="200" placeholder="Endereço ou setor"></div></div><p class="form-error" id="modalError"></p><div class="modal-footer"><button type="button" class="button secondary" data-close>Voltar</button><button type="submit" class="button primary">Criar O.S.</button></div></form>`);
       document.getElementById("createForm").addEventListener("submit",createOrder);
     };
+    const showTeam=()=>{
+      if(!current.admin)return;
+      const remaining=12-MEMBERS.length;
+      modal(`<div class="modal-head"><h2>Equipe <span style="color:var(--muted);font-weight:500">(${MEMBERS.length}/12)</span></h2><button class="close" type="button" data-close>×</button></div><div class="attachment-list" style="margin:0 0 16px">${MEMBERS.map(m=>`<span class="card" style="box-shadow:none;padding:9px 12px"><strong>${escapeHtml(m.name)}</strong><small style="display:block;color:var(--muted)">${roleLabel(m)}</small></span>`).join("")}</div>${remaining>0?`<form id="memberForm"><div class="form-grid"><div class="field"><label for="memberName">Nome completo</label><input id="memberName" maxlength="80" required></div><div class="field"><label for="memberId">Identificador de acesso</label><input id="memberId" maxlength="40" pattern="[a-z0-9][a-z0-9_-]{1,39}" required></div></div><div class="field"><label>Permissões</label><label><input type="checkbox" id="memberAdmin"> Administrador</label><label><input type="checkbox" id="memberTech"> Técnico</label></div><p class="form-error" id="modalError"></p><div class="modal-footer"><button type="button" class="button secondary" data-close>Fechar</button><button type="submit" class="button primary">Adicionar pessoa</button></div></form>`:'<p>Limite da equipe alcançado (12 pessoas).</p>'}<div id="inviteResult"></div>`);
+      const name=document.getElementById("memberName"),id=document.getElementById("memberId");
+      if(name&&id)name.addEventListener("input",()=>{id.value=name.value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)});
+      document.getElementById("memberForm")?.addEventListener("submit",addMember);
+    };
+    const addMember=async ev=>{
+      ev.preventDefault();if(!current.admin)return;
+      const displayName=document.getElementById("memberName").value.trim(),id=document.getElementById("memberId").value.trim();
+      const isAdmin=document.getElementById("memberAdmin").checked,isTech=document.getElementById("memberTech").checked;
+      const error=document.getElementById("modalError");
+      if(!isAdmin&&!isTech){error.textContent="Selecione pelo menos uma permissão.";return}
+      const code=Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".charAt(b%64)).join("");
+      try{
+        const {error:rpcError}=await sb.rpc("admin_add_member",{p_member_id:id,p_display_name:displayName,p_is_admin:isAdmin,p_is_technician:isTech,p_invite_code:code});
+        if(rpcError)throw rpcError;
+        await loadMemberDirectory();closeModal();renderApp();showTeam();
+        const result=document.getElementById("inviteResult");
+        result.innerHTML=`<div class="notice"><div><strong>Perfil adicionado: ${escapeHtml(displayName)}</strong>Envie este código só para essa pessoa. Ele será usado uma única vez para criar o PIN.</div><code>${code}</code><button id="copyInvite" type="button">Copiar código</button></div>`;
+        document.getElementById("copyInvite").addEventListener("click",async()=>{await navigator.clipboard.writeText(code);notify("Código copiado.")});
+      }catch(err){error.textContent=err.message||"Não foi possível adicionar a pessoa."}
+    };
+    const showEdit=id=>{
+      if(!current.admin)return;
+      const order=orders.find(o=>o.id===id);if(!order)return;
+      const options=MEMBERS.filter(m=>m.tech).map(m=>`<option value="${m.id}" ${m.id===order.assigned_to?"selected":""}>${escapeHtml(m.name)}</option>`).join("");
+      modal(`<div class="modal-head"><h2>Editar ordem de serviço</h2><button class="close" type="button" data-close>×</button></div><form id="editForm"><div class="form-grid"><div class="field span-two"><label for="editTitle">Serviço</label><input id="editTitle" maxlength="120" value="${escapeHtml(order.title)}" required></div><div class="field span-two"><label for="editDescription">Descrição</label><textarea id="editDescription" maxlength="2000">${escapeHtml(order.description||"")}</textarea></div><div class="field"><label for="editAssignee">Técnico responsável</label><select id="editAssignee" required>${options}</select></div><div class="field"><label for="editScheduled">Data e horário</label><input id="editScheduled" type="datetime-local" value="${new Date(new Date(order.scheduled_at).getTime()-new Date(order.scheduled_at).getTimezoneOffset()*60000).toISOString().slice(0,16)}" required></div><div class="field span-two"><label for="editLocation">Local</label><input id="editLocation" maxlength="200" value="${escapeHtml(order.location||"")}"></div></div><p class="form-error" id="modalError"></p><div class="modal-footer"><button type="button" class="button secondary" data-close>Voltar</button><button type="submit" class="button primary">Salvar alterações</button></div></form>`);
+      document.getElementById("editForm").addEventListener("submit",ev=>saveEdit(ev,id));
+    };
+    const saveEdit=async(ev,id)=>{
+      ev.preventDefault();if(!current.admin)return;
+      const payload={p_order_id:id,p_title:document.getElementById("editTitle").value.trim(),p_description:document.getElementById("editDescription").value.trim(),p_assigned_to:document.getElementById("editAssignee").value,p_scheduled_at:new Date(document.getElementById("editScheduled").value).toISOString(),p_location:document.getElementById("editLocation").value.trim()};
+      try{
+        if(online){const {error}=await sb.rpc("admin_update_work_order",payload);if(error)throw error;await loadOrders()}
+        else{const s=getLocal(),o=s.orders.find(x=>x.id===id),before={title:o.title,description:o.description,assigned_to:o.assigned_to,scheduled_at:o.scheduled_at,location:o.location};Object.assign(o,{title:payload.p_title,description:payload.p_description,assigned_to:payload.p_assigned_to,scheduled_at:payload.p_scheduled_at,location:payload.p_location});o.audit=o.audit||[];o.audit.unshift({actor:current.name,action:"Edição administrativa",created_at:new Date().toISOString(),changes:{before,after:{title:o.title,description:o.description,assigned_to:o.assigned_to,scheduled_at:o.scheduled_at,location:o.location}}});saveLocal(s);orders=s.orders}
+        closeModal();renderApp();notify("O.S. atualizada e registrada no histórico.");
+      }catch(error){document.getElementById("modalError").textContent=error.message||"Não foi possível salvar as alterações."}
+    };
+    const showAudit=async id=>{
+      if(!current.admin)return;
+      const order=orders.find(o=>o.id===id);if(!order)return;
+      modal(`<div class="modal-head"><h2>Histórico da O.S.</h2><button class="close" type="button" data-close>×</button></div><div id="auditEntries"><p>Carregando histórico…</p></div><div class="modal-footer"><button type="button" class="button secondary" data-close>Fechar</button></div>`);
+      try{
+        let entries=order.audit||[];
+        if(online){const {data,error}=await sb.from("work_order_audit").select("id,actor_id,action,changes,created_at").eq("work_order_id",id).order("created_at",{ascending:false});if(error)throw error;entries=data}
+        const host=document.getElementById("auditEntries");if(!host)return;
+          const labels={title:"Serviço",description:"Descrição",location:"Local",assigned_to:"Técnico",scheduled_at:"Agendamento",status:"Status",started_at:"Início",completed_at:"Fim",elapsed_seconds:"Tempo de execução"};
+          host.innerHTML=entries.length?entries.map(entry=>{const actor=memberById(entry.actor_id)?.name||entry.actor||"Sistema";const changes=entry.changes?.after?Object.entries(entry.changes.after).map(([key,value])=>{const before=entry.changes.before?.[key];const display=v=>key.endsWith("_at")?fmtDate(v):key==="elapsed_seconds"?formatDuration(v):key==="assigned_to"?memberById(v)?.name||v:key==="status"?statusLabel(v):typeof v==="string"?v:JSON.stringify(v);return `<div><strong>${escapeHtml(labels[key]||key)}:</strong> ${before!==undefined?`${escapeHtml(display(before))} → `:""}${escapeHtml(display(value))}</div>`}).join(""):"";return `<article class="card" style="margin-bottom:10px"><div class="order-id">${fmtDate(entry.created_at)}</div><strong>${escapeHtml(actor)} · ${escapeHtml(entry.action)}</strong><div style="font-size:13px;margin-top:8px">${changes||"Registro de atividade."}</div></article>`}).join(""):'<div class="empty"><strong>Sem registros ainda</strong>As próximas alterações aparecerão aqui.</div>';
+      }catch(error){const host=document.getElementById("auditEntries");if(host)host.innerHTML=`<p class="form-error">${escapeHtml(error.message||"Não foi possível carregar o histórico.")}</p>`}
+    };
     const createOrder=async ev=>{
       ev.preventDefault();const payload={title:document.getElementById("title").value.trim(),description:document.getElementById("description").value.trim(),assigned_to:document.getElementById("assignee").value,scheduled_at:new Date(document.getElementById("scheduled").value).toISOString(),location:document.getElementById("location").value.trim()};
-      try{if(online){const {error}=await sb.rpc("create_work_order",payload);if(error)throw error;await loadOrders()}else{const s=getLocal();s.orders.push({id:crypto.randomUUID(),...payload,created_by:current.id,status:"scheduled",attachments:[]});saveLocal(s);orders=s.orders}closeModal();renderApp();notify("Ordem de serviço criada.");}catch(e){document.getElementById("modalError").textContent=e.message||"Erro ao criar a ordem."}
+      try{if(online){const {error}=await sb.rpc("create_work_order",payload);if(error)throw error;await loadOrders()}else{const s=getLocal(),createdAt=new Date().toISOString();s.orders.push({id:crypto.randomUUID(),...payload,created_by:current.id,status:"scheduled",attachments:[],audit:[{actor:current.name,action:"O.S. criada",created_at:createdAt,changes:{after:{title:payload.title,status:"scheduled"}}}]});saveLocal(s);orders=s.orders}closeModal();renderApp();notify("Ordem de serviço criada.");}catch(e){document.getElementById("modalError").textContent=e.message||"Erro ao criar a ordem."}
     };
     const handleAction=async(action,id)=>{
       if(action==="attach"){attachFile(id);return}
       const mapping={start:["in_progress","Iniciar execução desta O.S.?"],finish:["completed","Marcar esta O.S. como concluída?"],cancel:["cancelled","Cancelar esta O.S.?"]};
       const [status,question]=mapping[action]||[];if(!status||!confirm(question))return;
-      try{if(online){const {error}=await sb.rpc("set_work_order_status",{p_order_id:id,p_status:status});if(error)throw error;await loadOrders()}else{const s=getLocal();const o=s.orders.find(x=>x.id===id);o.status=status;saveLocal(s);orders=s.orders}
+      try{if(online){const {error}=await sb.rpc("set_work_order_status",{p_order_id:id,p_status:status});if(error)throw error;await loadOrders()}else{const s=getLocal(),o=s.orders.find(x=>x.id===id),at=new Date().toISOString();const before={status:o.status,started_at:o.started_at||null,completed_at:o.completed_at||null,elapsed_seconds:o.elapsed_seconds??null};o.status=status;if(status==="in_progress")o.started_at=at;if(status==="completed"){o.completed_at=at;o.elapsed_seconds=o.started_at?Math.max(0,Math.floor((new Date(at)-new Date(o.started_at))/1000)):null}const after={status:o.status,started_at:o.started_at||null,completed_at:o.completed_at||null,elapsed_seconds:o.elapsed_seconds??null};o.audit=o.audit||[];o.audit.unshift({actor:current.name,action:`Status alterado: ${statusLabel(before.status)} → ${statusLabel(status)}`,created_at:at,changes:{before,after}});saveLocal(s);orders=s.orders}
         renderApp();notify(status==="completed"?"O.S. finalizada.":status==="cancelled"?"O.S. cancelada.":"Execução iniciada.");
       }catch(e){notify(e.message||"Não foi possível atualizar a O.S.")}
     };
@@ -161,6 +230,7 @@
       const input=document.createElement("input");input.type="file";input.accept="image/*,.pdf,.txt,.doc,.docx,.xls,.xlsx";input.onchange=async()=>{
         const file=input.files[0];if(!file)return;if(file.size>8*1024*1024){notify("O arquivo deve ter no máximo 8 MB.");return}
         try{if(online){const path=`${id}/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g,"_")}`;const {error:uploadError}=await sb.storage.from("os-attachments").upload(path,file,{upsert:false});if(uploadError)throw uploadError;const {error}=await sb.from("attachments").insert({work_order_id:id,name:file.name,object_path:path,uploaded_by:current.id});if(error)throw error;await loadOrders()}else{const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(file)});const s=getLocal();const o=s.orders.find(x=>x.id===id);o.attachments=o.attachments||[];o.attachments.push({id:crypto.randomUUID(),name:file.name,data_url:data});saveLocal(s);orders=s.orders}
+          if(!online){const o=orders.find(item=>item.id===id);o.audit=o.audit||[];o.audit.unshift({actor:current.name,action:"Arquivo anexado",created_at:new Date().toISOString(),changes:{after:{name:file.name}}})}
           renderApp();notify("Arquivo anexado.")
         }catch(e){notify(e.message||"Não foi possível anexar o arquivo.")}
       };input.click();
@@ -190,7 +260,8 @@
         const registration=await navigator.serviceWorker.ready;
         if(registration.pushManager&&await registration.pushManager.getSubscription())return;
       }
-      box.innerHTML='<div class="notice"><div><strong>Ative os avisos no celular</strong>Receba um lembrete 10 minutos antes das O.S. atribuídas a você.</div><button id="enableNotifications">Ativar avisos</button></div>';
+      if(!CFG.VAPID_PUBLIC_KEY){box.innerHTML='<div class="notice"><div><strong>Avisos ainda não configurados</strong>As chaves de notificações precisam ser configuradas antes de ativar os avisos.</div></div>';return}
+      box.innerHTML=`<div class="notice"><div><strong>Ative os avisos neste aparelho</strong>${current.admin?"Receba lembretes das próximas O.S. atribuídas à equipe.":"Receba um lembrete 10 minutos antes das O.S. atribuídas a você."}</div><button id="enableNotifications">Ativar avisos</button></div>`;
       document.getElementById("enableNotifications").addEventListener("click",()=>enableNotifications(true));
     };
     const enableNotifications=async(showMessage=true)=>{
@@ -200,7 +271,8 @@
         if(Notification.permission!=="granted"&&!showMessage)return;
         const permission=Notification.permission==="granted"?"granted":await Notification.requestPermission();if(permission!=="granted"){if(showMessage)notify("Permissão de notificação não concedida.");return}
         const registration=await navigator.serviceWorker.ready;
-        const key=Uint8Array.from(atob(CFG.VAPID_PUBLIC_KEY.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0));
+        const encodedKey=CFG.VAPID_PUBLIC_KEY+"=".repeat((4-CFG.VAPID_PUBLIC_KEY.length%4)%4);
+        const key=Uint8Array.from(atob(encodedKey.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0));
         const subscription=await registration.pushManager.getSubscription()||await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key});
         const json=subscription.toJSON();
         const {error}=await sb.from("push_subscriptions").upsert({member_id:current.id,endpoint:json.endpoint,p256dh:json.keys.p256dh,auth:json.keys.auth},{onConflict:"endpoint"});
@@ -212,7 +284,7 @@
     const handleDeepLink=async()=>{
       const url=new URL(location.href),action=url.searchParams.get("action"),id=url.searchParams.get("id");if(!action||!id||!online)return;
       url.searchParams.delete("action");url.searchParams.delete("id");history.replaceState({}, "",url);
-      if(action==="execute"){await handleAction("start",id)}
+      if(action==="execute"){if(current.tech&&current.id===orders.find(o=>o.id===id)?.assigned_to)await handleAction("start",id);else notify("Somente o técnico responsável pode executar esta O.S.")}
       if(action==="snooze"){const {error}=await sb.rpc("snooze_order_reminder",{p_order_id:id});if(error)notify(error.message);else notify("Lembrete adiado por 10 minutos.")}
     };
     initialize().catch(e=>{root.innerHTML=`<main class="login-wrap"><section class="login-card"><h1>Não foi possível carregar</h1><p>${escapeHtml(e.message||"Verifique sua conexão e configuração.")}</p><button class="button secondary" onclick="location.reload()">Tentar novamente</button></section></main>`});
