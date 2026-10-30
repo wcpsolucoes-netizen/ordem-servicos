@@ -510,7 +510,7 @@
     };
     const isCurrentPushSubscription=(subscription,key)=>{
       const existingKey=subscription?.options?.applicationServerKey;
-      return Boolean(existingKey&&existingKey.length===key.length&&existingKey.every((byte,index)=>byte===key[index]));
+      return Boolean(existingKey&&existingKey.byteLength===key.length&&new Uint8Array(existingKey).every((byte,index)=>byte===key[index]));
     };
     const showNotificationBanner=async()=>{
       if(!online||!("Notification" in window))return;
@@ -521,7 +521,7 @@
         const subscription=registration.pushManager&&await registration.pushManager.getSubscription();
         subscribed=Boolean(subscription&&isCurrentPushSubscription(subscription,getPushApplicationServerKey()));
       }
-      const foregroundHint="Com o site aberto, os lembretes locais aparecem até 10 minutos antes. Para receber avisos com o site fechado, falta configurar o envio no Supabase: função send-reminders, secrets VAPID e agendamento cron.";
+      const foregroundHint="Com o site aberto, os lembretes locais aparecem até 10 minutos antes. Os avisos com o site fechado dependem do envio e agendamento no Supabase e da inscrição deste aparelho.";
       if(subscribed){
         box.innerHTML=`<div class="notice"><div><strong>Este aparelho está inscrito para notificações</strong>${foregroundHint}</div></div>`;
         return;
