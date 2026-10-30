@@ -11,14 +11,15 @@ Abra `index.html` em um servidor local ou publique no Pages. Sem configuração 
 1. Crie um projeto Supabase no plano gratuito. O plano tem limites e pode pausar projetos inativos; confira as condições atuais do serviço.
 2. Em **Authentication → Sign-in / Providers**, desative o cadastro público de novos usuários. A aplicação cria as contas pelo código individual; permitir cadastros públicos pode deixar alguém reservar um perfil antes do membro legítimo.
 3. No **SQL Editor** do Supabase, execute `supabase/schema.sql`.
-4. Crie um código de ativação forte e exclusivo para cada pessoa (pelo menos 8 caracteres aleatórios). No SQL Editor, cadastre cada código para o perfil correspondente, sem o incluir no repositório:
+4. Se o banco já estava em uso, não execute novamente o schema inteiro: aplique apenas as migrações incrementais pendentes, na ordem indicada ao final deste README. Para um projeto novo, execute `schema.sql` e depois as quatro migrações, na ordem indicada.
+5. Crie um código de ativação forte e exclusivo para cada pessoa (pelo menos 8 caracteres aleatórios). No SQL Editor, cadastre cada código para o perfil correspondente, sem o incluir no repositório:
 
    ```sql
    select public.set_invite_code('theo', 'CODIGO_ALEATORIO_EXCLUSIVO');
    ```
 
    Repita para `wainy`, `jenifer`, `rayan`, `cristiano`, `otavio` e `pedro`, e entregue cada código somente ao respectivo membro. O código é de uso único; no primeiro acesso, a pessoa escolhe seu nome, informa o código e define o PIN de 4 dígitos.
-5. Instale e autentique a Supabase CLI, vincule o projeto e faça deploy das funções:
+6. Instale e autentique a Supabase CLI, vincule o projeto e faça deploy das funções:
 
    ```sh
    supabase login
@@ -31,9 +32,9 @@ Abra `index.html` em um servidor local ou publique no Pages. Sem configuração 
    - `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` (o Supabase costuma disponibilizá-los no ambiente das funções; **nunca** publique a service-role key).
    - `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` e `VAPID_SUBJECT`.
    - `APP_URL`, com a URL publicada no GitHub Pages, incluindo o caminho do repositório se aplicável.
-6. Gere as chaves VAPID com `npx web-push generate-vapid-keys`. Guarde a chave privada apenas nos secrets do Supabase. Coloque a chave pública em `VAPID_PUBLIC_KEY` no `config.js`.
-7. Copie a **Project URL** e a chave **anon/public** do Supabase para `SUPABASE_URL` e `SUPABASE_ANON_KEY` no `config.js`. A chave anon é pública e protegida pelas políticas RLS; não coloque a service-role key nesse arquivo.
-8. Ative **pg_cron**, **pg_net** e **Vault** no Supabase e agende `send-reminders` para executar a cada minuto. Cadastre a URL do projeto e a service-role key como secrets do Vault e use-as na chamada HTTP:
+7. Gere as chaves VAPID com `npx web-push generate-vapid-keys`. Guarde a chave privada apenas nos secrets do Supabase. Coloque a chave pública em `VAPID_PUBLIC_KEY` no `config.js`.
+8. Copie a **Project URL** e a chave **anon/public** do Supabase para `SUPABASE_URL` e `SUPABASE_ANON_KEY` no `config.js`. A chave anon é pública e protegida pelas políticas RLS; não coloque a service-role key nesse arquivo.
+9. Ative **pg_cron**, **pg_net** e **Vault** no Supabase e agende `send-reminders` para executar a cada minuto. Cadastre a URL do projeto e a service-role key como secrets do Vault e use-as na chamada HTTP:
 
    ```sql
    create extension if not exists pg_cron;
@@ -59,7 +60,7 @@ Abra `index.html` em um servidor local ou publique no Pages. Sem configuração 
    ```
 
    Crie os secrets `supabase_url` e `service_role_key` no Vault antes de agendar, usando **Database → Vault → Secrets → Add new secret**. Guarde a URL do projeto como `supabase_url` e a service-role key como `service_role_key`; não coloque valores secretos no código versionado.
-9. No GitHub, habilite **Settings → Pages** para publicar a pasta raiz da branch escolhida. O Pages fornece HTTPS, necessário para instalação da PWA e notificações.
+10. No GitHub, habilite **Settings → Pages** para publicar a pasta raiz da branch escolhida. O Pages fornece HTTPS, necessário para instalação da PWA e notificações.
 
 As notificações push são enviadas cerca de 10 minutos antes, considerando o fuso `America/Sao_Paulo`: segunda a sexta, das 8h às 18h; sábado, das 9h às 12h; nunca aos domingos. A janela de envio é verificada no servidor, não só no celular. O painel atualiza as O.S. compartilhadas a cada 30 segundos. O membro também precisa permitir notificações no navegador. No iPhone/iPad, instale pelo menu **Compartilhar → Adicionar à Tela de Início** e permita os avisos; o suporte a push depende da versão do iOS/iPadOS.
 
@@ -69,10 +70,26 @@ As notificações push são enviadas cerca de 10 minutos antes, considerando o f
 - **Rayan e Cristiano:** administradores e técnicos; podem criar, executar, anexar, finalizar O.S. atribuídas a eles e cancelar O.S.
 - **Theo, Otavio e Pedro:** técnicos; executam e finalizam O.S. atribuídas a eles, anexam arquivos e podem cancelar O.S.
 
-Os arquivos anexados têm limite de 8 MB e ficam no bucket privado do Supabase Storage. Todos os membros autenticados podem consultar as O.S. da equipe.
+Os arquivos anexados têm limite de 8 MB e ficam no bucket privado do Supabase Storage. Técnicos consultam apenas as O.S. atribuídas a eles; administradores têm visão geral da equipe.
 
 Administradores também podem editar os dados de qualquer O.S. sem alterar o status; as mudanças ficam registradas no histórico da ordem. O histórico inclui criação, edição, anexos e mudanças de status. A tela da O.S. mostra o agendamento, o início da execução, a conclusão e o tempo transcorrido; ao finalizar, o tempo é congelado como a duração total entre início e fim. Ordens iniciadas antes desta atualização não têm um horário de início retroativo, então a duração só será calculada para execuções iniciadas depois da migração. Os lembretes agendados são enviados ao técnico responsável e a todos os administradores que ativarem notificações.
 
+Ordens concluídas ficam guardadas em **Pesquisa e arquivo**, com busca por serviço, local, técnico ou número e filtro por classificação (entrega, manutenção, instalação, reparo, vistoria ou outros). Administradores podem reclassificar uma O.S. ao editá-la; alterações entram no histórico.
+
+Administradores também têm um **Dashboard** com ordens agendadas, em execução, concluídas no dia e agendamentos atrasados. O ranking diário inclui os técnicos, ordenados pelo número de O.S. concluídas no dia; em caso de empate, fica à frente quem tiver menor tempo médio registrado. A data diária considera o fuso de São Paulo.
+
+Um técnico não consegue iniciar uma segunda O.S. enquanto tiver outra em execução. Ao finalizar, precisa registrar o que foi feito (mínimo de 3 caracteres) e pode anexar arquivos de até 8 MB no mesmo formulário. A validação acontece na interface e no banco; a O.S. não é concluída se a descrição for inválida ou se o envio de anexo falhar.
+
 ### Atualização do banco para auditoria e duração
 
-Se o schema original já foi aplicado, execute uma única vez o script `supabase/migrations/20260610_admin_auditoria_etapas.sql` no SQL Editor do Supabase. Ele é uma migração incremental e não apaga as ordens existentes. Não é necessário executar novamente o schema inteiro.
+Se o schema original já foi aplicado, execute uma única vez `supabase/migrations/20260610_admin_auditoria_etapas.sql` no SQL Editor do Supabase. Ele é uma migração incremental e não apaga as ordens existentes. Não é necessário executar novamente o schema inteiro.
+
+### Conciliação de entregas
+
+Depois da migração de auditoria, execute uma única vez `supabase/migrations/20261030_conciliacao_entregas.sql`. Ela adiciona as classificações e a pesquisa/arquivo das O.S. concluídas, além do tipo de O.S. de entrega, valor a cobrar, forma de pagamento prevista, troco solicitado, fundo levado, maquininha e prestação de contas no retorno. Ao finalizar uma entrega, o técnico informa dinheiro/cartão/Pix recebidos, troco dado, dinheiro devolvido e devolução da maquininha. Diferenças na cobrança ou no caixa exigem uma observação e ficam registradas no histórico. O sistema registra valores para conferência; não processa pagamentos nem armazena dados de cartão.
+
+### Acesso por membro e finalização
+
+Depois da migração de conciliação, execute `supabase/migrations/20261030_member_visibility.sql` para restringir O.S. e anexos ao técnico responsável ou aos administradores. Por último, execute `supabase/migrations/20261101_execution_completion.sql`; ela bloqueia atomicamente uma segunda execução simultânea por técnico e exige uma descrição de conclusão com pelo menos 3 caracteres. Essa última migração também atualiza a rotina de fechamento de entrega e adiciona o campo de descrição ao histórico.
+
+Ordem completa para um banco novo: `schema.sql` → `20260610_admin_auditoria_etapas.sql` → `20261030_conciliacao_entregas.sql` → `20261030_member_visibility.sql` → `20261101_execution_completion.sql`. Em banco existente, aplique somente as migrações que ainda não foram executadas.
