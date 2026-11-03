@@ -4,10 +4,11 @@ self.addEventListener("push",event=>{
   let payload={title:"Ordem de serviço",body:"Há um serviço próximo do horário.",id:""};
   try{payload={...payload,...event.data.json()}}catch{}
   event.waitUntil(self.registration.showNotification(payload.title,{
-    body:payload.body,icon:"./icon.svg",badge:"./icon.svg",tag:`os-${payload.id}`,
+    body:payload.body,icon:"./icon-192.png",badge:"./icon-192.png",tag:payload.tag||`os-${payload.id}`,
+    vibrate:payload.vibrate||[250,100,250,100,500],renotify:true,requireInteraction:true,
     data:{id:payload.id,url:payload.url||"./"},actions:[
       ...(payload.canExecute?[{action:"execute",title:"Executar"}]:[]),
-      {action:"snooze",title:"Lembre-me mais tarde"}
+      ...(payload.canSnooze===false?[]:[{action:"snooze",title:"Lembre-me mais tarde"}])
     ]
   }));
 });

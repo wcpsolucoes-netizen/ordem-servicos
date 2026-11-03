@@ -3,23 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#0c1930">
   <meta name="description" content="Painel de ordens de serviço da equipe.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ordem">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
   <title>Ordem — Gestão de serviços</title>
-  <style>
-    :root{color-scheme:light;--ink:#172033;--muted:#758096;--line:#e7eaf0;--paper:#f5f7fb;--white:#fff;--navy:#111827;--blue:#4169e1;--blue-soft:#edf1ff;--green:#14866d;--green-soft:#e5f6f1;--amber:#a05a0a;--amber-soft:#fff3dd;--red:#bd3b49;--red-soft:#fff0f1;--shadow:0 12px 32px #1c2a4610}
-    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.hidden{display:none!important}
-    .app{min-height:100vh}.topbar{height:72px;background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between;padding:0 max(22px,calc((100vw - 1180px)/2));position:sticky;top:0;z-index:5;box-shadow:0 4px 20px #11182720}.brand{display:flex;align-items:center;gap:12px;font-weight:750;letter-spacing:-.4px}.brand-mark{width:37px;height:37px;border-radius:12px;background:#4169e1;display:grid;place-items:center;font-size:19px}.brand small{display:block;color:#9da8bb;font-size:11px;font-weight:500;letter-spacing:.5px;text-transform:uppercase}.user-menu{display:flex;align-items:center;gap:12px}.avatar{width:37px;height:37px;background:#27344a;border-radius:50%;display:grid;place-items:center;font-weight:700}.user-label{font-size:13px;font-weight:650}.user-label small{display:block;color:#abb4c4;font-size:11px;font-weight:450}.text-button{background:none;border:0;color:#d4dbea;padding:8px;font-size:13px}.main{max-width:1180px;padding:32px 22px 64px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:26px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;color:var(--blue);font-weight:750}.welcome h1{font-size:clamp(25px,4vw,34px);line-height:1.15;letter-spacing:-1px;margin:6px 0}.welcome p{color:var(--muted);margin:7px 0 0}.button{border:0;border-radius:10px;padding:11px 16px;font-weight:650;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px}.button:hover{transform:translateY(-1px)}.primary{background:var(--blue);color:white;box-shadow:0 4px 10px #4169e133}.secondary{background:white;border:1px solid var(--line);color:var(--ink)}.danger{background:var(--red-soft);color:var(--red)}.small-button{padding:7px 10px;font-size:12px;border-radius:8px}.notice{border:1px solid #dfe6ff;background:#f0f3ff;color:#344a9b;border-radius:12px;padding:13px 15px;margin-bottom:22px;font-size:13px;display:flex;justify-content:space-between;gap:12px;align-items:center}.notice strong{display:block}.notice button{border:0;background:none;color:inherit;text-decoration:underline;font-weight:650}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:25px}.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:17px 19px;box-shadow:var(--shadow)}.stat-label{color:var(--muted);font-size:12px}.stat-value{font-size:27px;font-weight:750;letter-spacing:-.7px;margin-top:3px}.stat-mark{float:right;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--blue-soft);color:var(--blue)}
-    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:13px;flex-wrap:wrap}.toolbar h2{font-size:18px;margin:0;letter-spacing:-.3px}.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.filters select,.filters input,.field input,.field textarea,.field select{background:white;border:1px solid var(--line);border-radius:9px;padding:10px 12px;color:var(--ink);outline:none;width:100%}.filters select{width:auto;padding:9px 32px 9px 12px}.filters input[type=search]{width:min(380px,100%)}.filters select:focus,.filters input:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:#8ba1f2;box-shadow:0 0 0 3px #4169e115}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);min-width:0}.card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.card h3{margin:8px 0 4px;font-size:17px;line-height:1.3;letter-spacing:-.3px}.card p{margin:0;color:var(--muted);font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.order-id{color:#8a93a5;font-size:11px;letter-spacing:.7px;font-weight:700}.status{border-radius:999px;padding:5px 9px;font-size:11px;font-weight:700;white-space:nowrap}.status-agendada{background:var(--blue-soft);color:#3652b4}.status-execucao{background:var(--amber-soft);color:var(--amber)}.status-concluida{background:var(--green-soft);color:var(--green)}.status-cancelada{background:var(--red-soft);color:var(--red)}.card-meta{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:14px;padding-top:12px;border-top:1px solid #f0f1f5;color:#59657a;font-size:12px}.card-meta span{display:inline-flex;align-items:center;gap:6px}.card-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.empty{grid-column:1/-1;text-align:center;border:1px dashed #d4d9e3;border-radius:14px;padding:52px 20px;color:var(--muted);background:#ffffff80}.empty-icon{font-size:28px;margin-bottom:9px}.empty strong{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
-    .login-wrap{min-height:100vh;background:radial-gradient(ellipse at 82% 10%,#273755 0%,transparent 42%),var(--navy);display:grid;place-items:center;padding:24px}.login-card{width:min(430px,100%);background:white;padding:34px;border-radius:20px;box-shadow:0 25px 80px #0005}.login-card .brand{color:var(--ink);margin-bottom:28px}.login-card .brand small{color:var(--muted)}.login-card h1{font-size:26px;letter-spacing:-.7px;margin:0 0 6px}.login-card>p{color:var(--muted);font-size:14px;margin:0 0 23px}.field{margin-bottom:16px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field textarea{min-height:86px;resize:vertical}.field input[type="datetime-local"]{color-scheme:light}.form-error{color:var(--red);font-size:13px;min-height:20px;margin:0 0 9px}.login-card .button{width:100%;margin-top:5px}.login-hint{margin-top:16px!important;font-size:12px!important;background:#f5f7fb;padding:12px;border-radius:10px}
-    .modal-backdrop{position:fixed;inset:0;background:#11182780;z-index:10;display:grid;place-items:center;padding:18px}.modal{width:min(540px,100%);max-height:min(90vh,780px);overflow:auto;background:white;border-radius:17px;padding:23px;box-shadow:0 24px 70px #0004}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h2{margin:0;font-size:19px}.close{border:0;background:#f0f2f6;border-radius:50%;height:34px;width:34px;font-size:20px;color:#59657a}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 13px}.span-two{grid-column:1/-1}.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.attachment-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.attachment-list a{background:#f2f4f8;color:#36435a;padding:7px 10px;border-radius:8px;font-size:12px;text-decoration:none}.preview-modal{width:min(900px,100%)}.preview-image{display:block;max-width:100%;max-height:72vh;margin:auto;object-fit:contain}.preview-frame{width:100%;height:72vh;border:0}.preview-caption{margin:-8px 0 16px;color:var(--muted);font-size:13px}.completion-summary{margin-top:14px;padding:16px;border:1px solid #dfe9e6;border-radius:12px;background:#f8fcfa}.completion-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}.completion-title strong{font-size:14px}.completion-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.completion-item{background:white;border:1px solid #edf0f3;border-radius:9px;padding:10px 12px;min-width:0}.completion-item small{display:block;color:var(--muted);font-size:11px;margin-bottom:3px}.completion-item strong{display:block;font-size:13px;overflow-wrap:anywhere}.completion-description{white-space:pre-wrap;overflow-wrap:anywhere}.audit-list{display:grid;gap:10px;max-height:65vh;overflow:auto;padding-right:3px}.audit-entry{border:1px solid var(--line);border-radius:12px;padding:14px;background:white}.audit-entry-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:9px}.audit-entry-head strong{font-size:13px}.audit-entry-head time{font-size:11px;color:var(--muted);white-space:nowrap}.audit-changes{display:grid;gap:7px;font-size:12px;color:#4f5c70}.audit-change{padding:8px 10px;background:#f7f8fb;border-radius:8px;overflow-wrap:anywhere}.dashboard .stats{grid-template-columns:repeat(4,minmax(0,1fr))}.dashboard-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.dashboard-grid h3{margin:0 0 5px;font-size:16px}.dashboard-grid .card>p{margin-bottom:13px}.ranking-row{display:grid;grid-template-columns:38px minmax(90px,1fr) auto auto;gap:10px;align-items:center;padding:11px 0;border-top:1px solid var(--line);font-size:13px}.rank-number{font-weight:750;color:var(--blue)}.ranking-detail{color:var(--muted);font-size:12px}.dashboard-indicator{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:13px}.dashboard-indicator strong{font-size:15px}.toast{position:fixed;z-index:20;bottom:22px;left:50%;transform:translateX(-50%);background:#182236;color:white;padding:12px 17px;border-radius:11px;box-shadow:0 8px 28px #0003;font-size:13px;max-width:calc(100% - 32px)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    @media(max-width:720px){.topbar{height:64px;padding:0 16px}.main{padding:25px 16px 45px}.welcome{align-items:flex-start;flex-direction:column}.welcome .button{width:100%}.stats{gap:9px}.dashboard .stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{padding:13px}.stat-value{font-size:23px}.cards,.dashboard-grid{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}.filters{width:100%}.filters select{flex:1;min-width:0}.notice{align-items:flex-start}.user-label{display:none}.form-grid{grid-template-columns:1fr}.span-two{grid-column:auto}.ranking-row{grid-template-columns:30px minmax(70px,1fr) auto}.ranking-detail:last-child{display:none}}@media(max-width:390px){.stats,.dashboard .stats{grid-template-columns:1fr}.stat{display:flex;align-items:center;justify-content:space-between}.stat-value{margin:0}.login-card{padding:25px}}
-  </style>
 </head>
 <body>
   <div id="root"></div>
@@ -44,27 +37,7 @@
     const root=document.getElementById("root");
     const escapeHtml=(s="")=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     const memberById=id=>MEMBERS.find(m=>m.id===id);
-    const TECH_WHATSAPP={
-      theo:"5537998288896",
-      otavio:"5537999364039",
-      rayan:"5537998134227",
-      pedro:"5537998404790"
-    };
-    const whatsappCallUrl=order=>{
-      const technician=memberById(order.assigned_to),phone=TECH_WHATSAPP[order.assigned_to];
-      if(!current.admin||!technician||!phone||!isNotTerminal(order.status))return "";
-      const message=[
-        "🤖 AVISO AUTOMÁTICO — CRISTEC",
-        "",
-        `Olá, ${technician.name}.`,
-        `A Administração da Cristec informa que ${current.name} está solicitando que você compareça à frente.`,
-        "",
-        "Esta mensagem foi gerada automaticamente pelo sistema de ordens de serviço. Por favor, não responda por aqui.",
-        `O.S.: ${order.title} · Agendamento: ${fmtDate(order.scheduled_at)}`
-      ].join("\n");
-      return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    };
-    let current=null,orders=[],activeFilter="all",activeView="orders",searchQuery="",archiveCategory="all",toastTimer,refreshTimer;
+    let current=null,orders=[],activeFilter="all",activeView="orders",searchQuery="",archiveCategory="all",toastTimer,refreshTimer,installPrompt=null;
     const remindedOrders=new Set();
     const localKey="ordem-app-state-v1";
     const getLocal=()=>{const saved=localStorage.getItem(localKey);if(!saved)return{pins:{},orders:[]};try{const state=JSON.parse(saved);return{pins:state?.pins||{},orders:Array.isArray(state?.orders)?state.orders:[]}}catch{throw new Error("Não foi possível ler os dados locais deste aparelho. Os dados armazenados não foram alterados.")}};
@@ -85,13 +58,52 @@
         if("Notification" in window&&Notification.permission==="granted"&&"serviceWorker" in navigator){
           navigator.serviceWorker.ready.then(registration=>registration.showNotification("O.S. próxima",{
             body:current.tech&&current.id===order.assigned_to?message:`${technician}: ${message}`,
-            icon:"./icon.svg",badge:"./icon.svg",tag:`os-foreground-${order.id}`,
+            icon:"./icon-192.png",badge:"./icon-192.png",tag:`os-foreground-${order.id}`,
+            vibrate:[250,100,250,100,500],renotify:true,requireInteraction:true,
             data:{id:order.id,url:CFG.APP_URL||"./"},
             actions:current.tech&&current.id===order.assigned_to?[{action:"execute",title:"Executar"},{action:"snooze",title:"Lembre-me mais tarde"}]:[]
           })).catch(error=>console.error("Falha ao mostrar lembrete local:",error));
         }
       }
     };
+    const isStandalone=()=>window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+    const updateInstallButtons=()=>{
+      const installed=isStandalone();
+      document.querySelectorAll("[data-install-app]").forEach(button=>{
+        button.classList.toggle("hidden",installed);
+        button.textContent=button.classList.contains("install-cta-top")?"⇩ Instalar":"⇩ Instalar como app";
+      });
+    };
+    const installApp=async()=>{
+      if(isStandalone()){notify("O app já está instalado neste aparelho.");return}
+      if(installPrompt){
+        const promptEvent=installPrompt;
+        installPrompt=null;
+        await promptEvent.prompt();
+        const choice=await promptEvent.userChoice;
+        if(choice.outcome==="accepted")notify("Instalação iniciada. O app ficará disponível na tela inicial.");
+        else notify("Instalação cancelada.");
+        updateInstallButtons();
+        return;
+      }
+      const ua=navigator.userAgent;
+      const instructions=/iPhone|iPad|iPod/i.test(ua)
+        ?"<p>No Safari, toque em <strong>Compartilhar</strong> e escolha <strong>Adicionar à Tela de Início</strong>.</p>"
+        :/Android/i.test(ua)
+          ?"<p>No Chrome, abra o menu <strong>⋮</strong> e toque em <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong>.</p>"
+          :"<p>No Chrome ou Edge, use o ícone de instalação na barra de endereço ou abra o menu do navegador e escolha <strong>Instalar Ordem</strong>.</p>";
+      modal(`<div class="modal-head"><h2>Instalar Ordem</h2><button class="close" type="button" data-close aria-label="Fechar">×</button></div><p>Adicione o sistema à tela inicial ou à área de trabalho como um app leve. Ele continua sendo este site: não baixa APK e não ocupa o espaço de um app nativo.</p>${instructions}<p class="install-note">Para instalar, abra este endereço em um navegador compatível e mantenha a conexão HTTPS.</p><div class="modal-footer"><button class="button primary" type="button" data-close>Entendi</button></div>`);
+    };
+    window.addEventListener("beforeinstallprompt",event=>{
+      event.preventDefault();
+      installPrompt=event;
+      updateInstallButtons();
+    });
+    window.addEventListener("appinstalled",()=>{
+      installPrompt=null;
+      updateInstallButtons();
+      notify("Ordem foi instalado neste aparelho.");
+    });
     const roleLabel=m=>m.admin&&m.tech?"Admin · Técnico":m.admin?"Administrador":"Técnico";
     const statusLabel=s=>({scheduled:"Agendada",in_progress:"Em execução",completed:"Concluída",cancelled:"Cancelada"})[s]||s;
     const categoryLabel=value=>({delivery:"Entrega",maintenance:"Manutenção",installation:"Instalação",repair:"Reparo",inspection:"Vistoria",other:"Outros"})[value]||"Outros";
@@ -117,6 +129,14 @@
       MEMBERS=data.map(m=>({id:m.id,name:m.display_name,admin:m.is_admin,tech:m.is_technician}));
     };
     const renderLogin=()=>{root.innerHTML=`<main class="login-wrap"><section class="login-card"><div class="brand"><div class="brand-mark">▦</div><div>ordem<small>Gestão de serviços</small></div></div><h1>Bem-vindo à equipe</h1><p>Escolha seu perfil para acessar as ordens de serviço.</p><form id="loginForm"><div class="field"><label for="member">Quem é você?</label><select id="member" required><option value="">Selecione seu nome</option>${MEMBERS.map(m=>`<option value="${m.id}">${escapeHtml(m.name)} · ${roleLabel(m)}</option>`).join("")}</select></div><div class="field"><label for="pin">PIN de 4 dígitos</label><input id="pin" inputmode="numeric" autocomplete="current-password" maxlength="4" pattern="[0-9]{4}" placeholder="••••" required></div><div id="inviteField" class="field hidden"><label for="invite">Código de ativação individual</label><input id="invite" autocomplete="off" placeholder="Informe o código recebido"></div><label style="display:flex;gap:8px;align-items:center;font-size:13px;margin:0 0 16px"><input id="firstAccess" type="checkbox"> Primeiro acesso? Cadastrar meu PIN</label><p class="form-error" id="loginError"></p><button class="button primary" type="submit" id="loginButton">Entrar</button></form><p class="login-hint">${online?"Seu acesso é protegido pelo PIN e pelo código de ativação individual no primeiro cadastro.":"Demonstração local: cada aparelho mantém seus próprios dados. Configure o Supabase para compartilhar O.S. entre a equipe."}</p></section></main>`;
+      const installButton=document.createElement("button");
+      installButton.className="install-cta";
+      installButton.type="button";
+      installButton.dataset.installApp="";
+      installButton.textContent="⇩ Instalar como app";
+      installButton.addEventListener("click",()=>installApp().catch(error=>{console.error("Falha ao iniciar instalação:",error);notify("Não foi possível iniciar a instalação.")}));
+      document.querySelector(".login-card").appendChild(installButton);
+      updateInstallButtons();
       const first=document.getElementById("firstAccess");
       first.addEventListener("change",()=>document.getElementById("inviteField").classList.toggle("hidden",!first.checked||online===false));
       document.getElementById("loginForm").addEventListener("submit",handleLogin);
@@ -183,6 +203,15 @@
       const dashboard=`<section class="dashboard"><div class="toolbar"><div class="filters"><button id="dashboardTab" class="button primary">Dashboard</button><button id="ordersTab" class="button secondary">Ordens abertas</button><button id="archiveTab" class="button secondary">Pesquisa e arquivo (${done})</button></div><h2>Dashboard diário <span style="color:var(--muted);font-weight:500">${new Intl.DateTimeFormat("pt-BR",{dateStyle:"full",timeZone:"America/Sao_Paulo"}).format(new Date())}</span></h2></div><div class="stats"><article class="stat"><span class="stat-mark">◷</span><div class="stat-label">Agendadas</div><div class="stat-value">${waiting}</div></article><article class="stat"><span class="stat-mark" style="background:var(--amber-soft);color:var(--amber)">↗</span><div class="stat-label">Em execução</div><div class="stat-value">${progress}</div></article><article class="stat"><span class="stat-mark" style="background:var(--green-soft);color:var(--green)">✓</span><div class="stat-label">Concluídas hoje</div><div class="stat-value">${completedToday.length}</div></article><article class="stat"><span class="stat-mark" style="background:var(--red-soft);color:var(--red)">!</span><div class="stat-label">Agendadas atrasadas</div><div class="stat-value">${overdue}</div></article></div><div class="dashboard-grid"><section class="card"><h3>Ranking diário da equipe técnica</h3><p>Ordenado por O.S. concluídas hoje; empate pelo menor tempo médio registrado.</p>${ranking.map((item,index)=>`<div class="ranking-row"><span class="rank-number">#${index+1}</span><strong>${escapeHtml(item.member.name)}</strong><span>${item.count} concluída${item.count===1?"":"s"}</span><span class="ranking-detail">${item.average===null?"Sem tempo":formatDuration(item.average)}</span></div>`).join("")||'<div class="empty">Nenhum técnico cadastrado.</div>'}</section><section class="card"><h3>Resumo operacional</h3><p>Visão geral do trabalho registrado no sistema.</p><div class="dashboard-indicator"><span>Ordens totais</span><strong>${orders.length}</strong></div><div class="dashboard-indicator"><span>Em execução agora</span><strong>${progress}</strong></div><div class="dashboard-indicator"><span>Finalizadas hoje</span><strong>${completedToday.length}</strong></div><div class="dashboard-indicator"><span>Finalizadas no total</span><strong>${done}</strong></div></section></div></section>`;
       const listView=`<section><div class="toolbar"><div class="filters">${isAdmin?`<button id="dashboardTab" class="button ${activeView==="dashboard"?"primary":"secondary"}">Dashboard</button>`:""}<button id="ordersTab" class="button ${activeView==="orders"?"primary":"secondary"}">Ordens abertas</button><button id="archiveTab" class="button ${activeView==="archive"?"primary":"secondary"}">Pesquisa e arquivo (${done})</button></div><h2>${activeView==="archive"?"O.S. resolvidas":"Ordens de serviço"} <span style="color:var(--muted);font-weight:500">(${activeView==="archive"?archived.length:visible.length})</span></h2>${activeView==="archive"?`<div class="filters"><label class="sr-only" for="orderSearch">Pesquisar O.S. resolvidas</label><input id="orderSearch" type="search" placeholder="Buscar serviço, local, técnico ou nº da O.S." value="${escapeHtml(searchQuery)}"><label class="sr-only" for="archiveCategory">Classificar arquivo</label><select id="archiveCategory"><option value="all">Todas as classificações</option><option value="delivery">Entrega</option><option value="maintenance">Manutenção</option><option value="installation">Instalação</option><option value="repair">Reparo</option><option value="inspection">Vistoria</option><option value="other">Outros</option></select></div>`:activeView==="orders"?`<div class="filters"><label class="sr-only" for="filter">Filtrar ordens</label><select id="filter"><option value="all">Todas as abertas</option><option value="scheduled">Agendadas</option><option value="in_progress">Em execução</option><option value="cancelled">Canceladas</option></select></div>`:""}</div><div class="cards">${(activeView==="archive"?archived:visible).length?(activeView==="archive"?archived:visible).map(renderOrder).join(""):`<div class="empty"><div class="empty-icon">${activeView==="archive"?"⌕":"✦"}</div><strong>${activeView==="archive"?"Nenhuma O.S. encontrada":"Nenhuma ordem por aqui"}</strong>${activeView==="archive"?"As O.S. concluídas ficam guardadas aqui. Ajuste a busca ou a classificação.":"Quando houver uma O.S., ela aparecerá nesta lista."}</div>`}</div></section>`;
       root.innerHTML=`<div class="app"><header class="topbar"><div class="brand"><div class="brand-mark">▦</div><div>ordem<small>Gestão de serviços</small></div></div><div class="user-menu"><div class="avatar">${escapeHtml(current.name.slice(0,1))}</div><div class="user-label">${escapeHtml(current.name)}<small>${roleLabel(current)}</small></div>${isAdmin?'<button class="text-button" id="team">Equipe</button>':""}<button class="text-button" id="logout">Sair</button></div></header><main class="main"><section class="welcome"><div><div class="eyebrow">Painel da equipe</div><h1>Olá, ${escapeHtml(current.name)} 👋</h1><p>Acompanhe os serviços e mantenha tudo em ordem.</p></div>${canCreate?'<button class="button primary" id="newOrder">＋ Nova ordem de serviço</button>':""}</section>${online?"":'<div class="notice"><div><strong>Modo demonstração local</strong>Dados ficam somente neste aparelho. Configure o Supabase antes de publicar para a equipe.</div></div>'}<div id="notifyBanner"></div>${activeView==="dashboard"&&isAdmin?dashboard:`<section class="stats"><article class="stat"><span class="stat-mark">◷</span><div class="stat-label">Agendadas</div><div class="stat-value">${waiting}</div></article><article class="stat"><span class="stat-mark" style="background:var(--amber-soft);color:var(--amber)">↗</span><div class="stat-label">Em execução</div><div class="stat-value">${progress}</div></article><article class="stat"><span class="stat-mark" style="background:var(--green-soft);color:var(--green)">✓</span><div class="stat-label">Concluídas / Arquivo</div><div class="stat-value">${done}</div></article></section>${listView}`}</main></div>`;
+      const installButton=document.createElement("button");
+      installButton.className="text-button install-cta-top";
+      installButton.type="button";
+      installButton.dataset.installApp="";
+      installButton.setAttribute("aria-label","Instalar app");
+      installButton.textContent="⇩ Instalar";
+      installButton.addEventListener("click",()=>installApp().catch(error=>{console.error("Falha ao iniciar instalação:",error);notify("Não foi possível iniciar a instalação.")}));
+      document.querySelector(".user-menu").insertBefore(installButton,document.getElementById("logout"));
+      updateInstallButtons();
       if(isAdmin)document.getElementById("dashboardTab")?.addEventListener("click",()=>{activeView="dashboard";renderApp()});
       document.getElementById("ordersTab")?.addEventListener("click",()=>{activeView="orders";renderApp()});
       document.getElementById("archiveTab")?.addEventListener("click",()=>{activeView="archive";activeFilter="all";renderApp()});
@@ -198,7 +227,7 @@
       document.getElementById("logout").addEventListener("click",logout);
       if(canCreate)document.getElementById("newOrder").addEventListener("click",showCreate);
       if(isAdmin)document.getElementById("team").addEventListener("click",showTeam);
-      document.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>handleAction(b.dataset.action,b.dataset.id)));
+      document.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>b.dataset.action==="notify"?sendTechnicianAlert(b.dataset.id,b):handleAction(b.dataset.action,b.dataset.id)));
       document.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>showEdit(b.dataset.edit)));
       document.querySelectorAll("[data-audit]").forEach(b=>b.addEventListener("click",()=>showAudit(b.dataset.audit)));
       document.querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteOrder(b.dataset.delete)));
@@ -219,13 +248,13 @@
       const mayCancel=current.tech&&!["completed","cancelled"].includes(o.status);
       const mayEdit=current.admin;
       const mayDelete=current.admin;
-      const callUrl=whatsappCallUrl(o);
+      const canNotify=current.admin&&Boolean(memberById(o.assigned_to)?.tech)&&isNotTerminal(o.status);
       const attachments=o.attachments||[];
       const elapsed=o.elapsed_seconds??(o.started_at&&o.status==="in_progress"?Math.max(0,Math.floor((Date.now()-new Date(o.started_at).getTime())/1000)):null);
       const timeline=`<div class="card-meta" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px"><span>◷ Agendada<br>${fmtDate(o.scheduled_at)}</span><span>▶ Início<br>${o.started_at?fmtDate(o.started_at):"Aguardando"}</span><span>✓ Fim<br>${o.completed_at?fmtDate(o.completed_at):o.status==="cancelled"?"Cancelada":"Em aberto"}</span><span>⏱ Tempo de execução<br>${elapsed!==null?formatDuration(elapsed):"—"}</span></div>`;
       const deliverySummary=o.service_type==="delivery"?`<div class="card-meta" style="display:block"><strong>Entrega · Cobrar ${formatMoney(o.amount_due)}</strong><div>Pagamento previsto: ${paymentLabel(o.payment_method)}${Number(o.cash_change_for)>0?` · Cliente paga com ${formatMoney(o.cash_change_for)} · Troco previsto ${formatMoney(Math.max(0,Number(o.cash_change_for)-Number(o.amount_due)))}`:""}${Number(o.cash_float)>0?` · Fundo: ${formatMoney(o.cash_float)}`:""}${o.card_machine_required?" · Maquininha necessária":""}</div>${o.delivery_notes?`<div>${escapeHtml(o.delivery_notes)}</div>`:""}</div>`:"";
       const completionSummary=renderCompletionSummary(o);
-      return `<article class="card"><div class="card-head"><div><div class="order-id">${escapeHtml((o.id||"").toString().slice(0,8).toUpperCase())}</div><h3>${escapeHtml(o.title)}</h3><p>${escapeHtml(o.description||"Sem descrição.")}</p></div><span class="status ${statusClass(o.status)}">${statusLabel(o.status)}</span></div><div class="card-meta"><span>♙ ${escapeHtml(assignee)}</span><span>▤ ${categoryLabel(o.work_category)}</span>${o.location?`<span>⌖ ${escapeHtml(o.location)}</span>`:""}</div>${timeline}${deliverySummary}${completionSummary}${attachments.length?`<div class="attachment-list">${attachments.map(a=>`<a href="#" data-file="${escapeHtml(a.object_path||a.data_url||"")}" data-name="${escapeHtml(a.name)}">▧ ${escapeHtml(a.name)}</a>`).join("")}</div>`:""}<div class="card-actions">${mayRun?`<button class="button primary small-button" data-action="start" data-id="${o.id}">▶ Executar</button>`:""}${mayFinish?`<button class="button primary small-button" data-action="finish" data-id="${o.id}">✓ Finalizar</button>`:""}${callUrl?`<a class="button secondary small-button" href="${callUrl}" target="_blank" rel="noopener noreferrer">☏ Chamar técnico</a>`:""}${isNotTerminal(o.status)?`<button class="button secondary small-button" data-action="attach" data-id="${o.id}">＋ Anexar</button>`:""}${mayCancel?`<button class="button danger small-button" data-action="cancel" data-id="${o.id}">Cancelar</button>`:""}${mayEdit?`<button class="button secondary small-button" data-edit="${o.id}">✎ Editar</button>`:""}${current.admin?`<button class="button secondary small-button" data-audit="${o.id}">◷ Histórico</button>`:""}${mayDelete?`<button class="button danger small-button" data-delete="${o.id}">Excluir O.S.</button>`:""}</div></article>`;
+      return `<article class="card"><div class="card-head"><div><div class="order-id">${escapeHtml((o.id||"").toString().slice(0,8).toUpperCase())}</div><h3>${escapeHtml(o.title)}</h3><p>${escapeHtml(o.description||"Sem descrição.")}</p></div><span class="status ${statusClass(o.status)}">${statusLabel(o.status)}</span></div><div class="card-meta"><span>♙ ${escapeHtml(assignee)}</span><span>▤ ${categoryLabel(o.work_category)}</span>${o.location?`<span>⌖ ${escapeHtml(o.location)}</span>`:""}</div>${timeline}${deliverySummary}${completionSummary}${attachments.length?`<div class="attachment-list">${attachments.map(a=>`<a href="#" data-file="${escapeHtml(a.object_path||a.data_url||"")}" data-name="${escapeHtml(a.name)}">▧ ${escapeHtml(a.name)}</a>`).join("")}</div>`:""}<div class="card-actions">${mayRun?`<button class="button primary small-button" data-action="start" data-id="${o.id}">▶ Executar</button>`:""}${mayFinish?`<button class="button primary small-button" data-action="finish" data-id="${o.id}">✓ Finalizar</button>`:""}${canNotify?`<button class="button secondary small-button" data-action="notify" data-id="${o.id}">♧ Avisar técnico</button>`:""}${isNotTerminal(o.status)?`<button class="button secondary small-button" data-action="attach" data-id="${o.id}">＋ Anexar</button>`:""}${mayCancel?`<button class="button danger small-button" data-action="cancel" data-id="${o.id}">Cancelar</button>`:""}${mayEdit?`<button class="button secondary small-button" data-edit="${o.id}">✎ Editar</button>`:""}${current.admin?`<button class="button secondary small-button" data-audit="${o.id}">◷ Histórico</button>`:""}${mayDelete?`<button class="button danger small-button" data-delete="${o.id}">Excluir O.S.</button>`:""}</div></article>`;
     };
     const formatMoney=value=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(value)||0);
     const paymentLabel=value=>({none:"Sem cobrança",cash:"Dinheiro",card:"Cartão",pix:"Pix",mixed:"Misto"})[value]||"Não informado";
@@ -338,6 +367,40 @@
     const createOrder=async ev=>{
       ev.preventDefault();const delivery=readDeliveryFields("new");const payload={p_title:document.getElementById("title").value.trim(),p_description:document.getElementById("description").value.trim(),p_assigned_to:document.getElementById("assignee").value,p_scheduled_at:new Date(document.getElementById("scheduled").value).toISOString(),p_location:document.getElementById("location").value.trim(),p_service_type:delivery.service_type,p_amount_due:delivery.amount_due,p_payment_method:delivery.payment_method,p_cash_change_for:delivery.cash_change_for,p_cash_float:delivery.cash_float,p_card_machine_required:delivery.card_machine_required,p_delivery_notes:delivery.delivery_notes,p_work_category:delivery.work_category};
       try{if(online){const {error}=await sb.rpc("create_work_order_v2",payload);if(error)throw error;await loadOrders()}else{const s=getLocal(),createdAt=new Date().toISOString();s.orders.push({id:crypto.randomUUID(),title:payload.p_title,description:payload.p_description,assigned_to:payload.p_assigned_to,scheduled_at:payload.p_scheduled_at,location:payload.p_location,...delivery,created_by:current.id,status:"scheduled",attachments:[],audit:[{actor:current.name,action:"O.S. criada",created_at:createdAt,changes:{after:{title:payload.p_title,status:"scheduled",...delivery}}}]});saveLocal(s);orders=s.orders}closeModal();renderApp();notify("Ordem de serviço criada.");}catch(e){document.getElementById("modalError").textContent=e.message||"Erro ao criar a ordem."}
+    };
+    const sendTechnicianAlert=async(orderId,button)=>{
+      const order=orders.find(item=>item.id===orderId);
+      const technician=memberById(order?.assigned_to);
+      if(!online||!current?.admin||!order||!technician?.tech||!isNotTerminal(order.status)){
+        notify("Não foi possível enviar o aviso para esta O.S.");
+        return;
+      }
+      const originalLabel=button.textContent;
+      button.disabled=true;
+      button.textContent="Enviando aviso…";
+      try{
+        const {data:{session},error:sessionError}=await sb.auth.getSession();
+        if(sessionError)throw sessionError;
+        if(!session)throw new Error("Sua sessão expirou. Entre novamente para avisar o técnico.");
+        const response=await fetch(`${CFG.SUPABASE_URL}/functions/v1/notify-technician`,{
+          method:"POST",
+          headers:{
+            "Authorization":`Bearer ${session.access_token}`,
+            "apikey":CFG.SUPABASE_ANON_KEY,
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({order_id:order.id})
+        });
+        const result=await response.json().catch(()=>({}));
+        if(!response.ok)throw new Error(result.error||"Não foi possível entregar o aviso ao técnico.");
+        notify(`Notificação enviada para ${technician.name}.`);
+      }catch(error){
+        console.error("Falha ao enviar aviso ao técnico:",error);
+        notify(error.message||"Não foi possível enviar o aviso ao técnico.");
+      }finally{
+        button.disabled=false;
+        button.textContent=originalLabel;
+      }
     };
     const handleAction=async(action,id)=>{
       if(action==="attach"){attachFile(id);return}

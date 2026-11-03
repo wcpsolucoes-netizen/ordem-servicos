@@ -1,6 +1,10 @@
 # Ordem — ordens de serviço da equipe
 
-Aplicação web responsiva e instalável como atalho (PWA). O GitHub Pages hospeda os arquivos estáticos; o Supabase armazena as O.S., autentica os membros e envia notificações push.
+Aplicação web responsiva e instalável como app leve (PWA), sem APK nem loja de aplicativos. O GitHub Pages hospeda os arquivos estáticos; o Supabase armazena as O.S., autentica os membros e envia notificações push.
+
+No Android, abra no Chrome e use **Instalar app** ou **Adicionar à tela inicial**. No computador, instale pelo ícone na barra de endereço do Chrome/Edge. No iPhone/iPad, use Safari → **Compartilhar → Adicionar à Tela de Início**. Depois, o atalho abre o site em uma janela própria; continua sendo uma aplicação HTML hospedada na web.
+
+O visual responsivo da aplicação está centralizado em `styles.css`, com layouts próprios para celular, tablet e desktop.
 
 ## Demonstração local
 
@@ -26,12 +30,13 @@ Abra `index.html` em um servidor local ou publique no Pages. Sem configuração 
    supabase link --project-ref SEU_PROJECT_REF
    supabase functions deploy setup-member
    supabase functions deploy send-reminders --no-verify-jwt
+   supabase functions deploy notify-technician
    ```
 
-   Configure os secrets da função `send-reminders` no painel Supabase:
+   Configure estes secrets no painel Supabase para **`send-reminders` e `notify-technician`**:
    - `VAPID_PUBLIC_KEY` (a mesma chave pública definida em `config.js`), `VAPID_PRIVATE_KEY` e `VAPID_SUBJECT` (por exemplo, `mailto:seu-email@dominio.com`).
-   - `CRON_SECRET`, um valor aleatório forte e exclusivo. Cadastre o mesmo valor também no Vault, com o nome `cron_secret`.
    - `APP_URL`, com a URL HTTPS publicada no GitHub Pages, incluindo o caminho do repositório se aplicável.
+   - Para `send-reminders`, configure também `CRON_SECRET`, um valor aleatório forte e exclusivo, e cadastre o mesmo valor no Vault com o nome `cron_secret`. Não é necessário configurar esse segredo em `notify-technician`.
    - `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` normalmente já são disponibilizados pelo Supabase no ambiente das funções. Nunca publique nem coloque a service-role key no código do site.
 7. Gere as chaves VAPID com `npx web-push generate-vapid-keys`. Guarde a chave privada apenas nos secrets do Supabase. Coloque a chave pública em `VAPID_PUBLIC_KEY` no `config.js`.
 8. Copie a **Project URL** e a chave **anon/public** do Supabase para `SUPABASE_URL` e `SUPABASE_ANON_KEY` no `config.js`. A chave anon é pública e protegida pelas políticas RLS; não coloque a service-role key nesse arquivo.
@@ -63,7 +68,7 @@ Abra `index.html` em um servidor local ou publique no Pages. Sem configuração 
    Crie os secrets `supabase_url` e `cron_secret` no Vault antes de agendar, usando **Database → Vault → Secrets → Add new secret**. O valor de `cron_secret` deve permanecer secreto e não deve ser incluído no código versionado. A função valida esse segredo no cabeçalho `x-cron-secret`; por isso, desative **Verify JWT with legacy secret** nas configurações da função `send-reminders` (o deploy acima já desativa a verificação JWT pela CLI).
 10. No GitHub, habilite **Settings → Pages** para publicar a pasta raiz da branch escolhida. O Pages fornece HTTPS, necessário para instalação da PWA e notificações.
 
-Com o site aberto, o app verifica os agendamentos e exibe um aviso quando faltam até 10 minutos; para receber pop-up do sistema, permita notificações no navegador. Para receber avisos com o site fechado, também é necessário publicar a função `send-reminders`, configurar os secrets VAPID e manter o cron do Supabase agendado por minuto conforme os passos acima. A permissão no navegador, sozinha, não ativa o envio pelo servidor. A janela do push considera o fuso `America/Sao_Paulo`: segunda a sexta, das 8h às 18h; sábado, das 9h às 12h; nunca aos domingos. O painel atualiza as O.S. compartilhadas a cada 30 segundos. No iPhone/iPad, instale pelo menu **Compartilhar → Adicionar à Tela de Início** e permita os avisos; o suporte a push depende da versão do iOS/iPadOS.
+Com o site aberto, o app verifica os agendamentos e exibe um aviso quando faltam até 10 minutos; para receber pop-up do sistema, permita notificações no navegador. O técnico também precisa entrar no sistema e tocar em **Ativar avisos** em cada aparelho. Para receber avisos agendados com o site fechado, publique `send-reminders`, configure os secrets VAPID e mantenha o cron do Supabase agendado por minuto. A função `notify-technician` envia o chamado administrativo diretamente como push para o aparelho inscrito, sem WhatsApp. O app pede uma vibração de alerta; Android/Chrome pode executá-la de acordo com as permissões e configurações do aparelho. iOS/iPadOS e alguns navegadores ignoram o padrão de vibração, que não pode ser forçado pelo site. A janela dos lembretes agendados considera `America/Sao_Paulo`: segunda a sexta, das 8h às 18h; sábado, das 9h às 12h; nunca aos domingos. O painel atualiza as O.S. compartilhadas a cada 30 segundos.
 
 ## Papéis
 
@@ -83,11 +88,9 @@ Administradores também têm um **Dashboard** com ordens agendadas, em execuçã
 
 Um técnico não consegue iniciar uma segunda O.S. enquanto tiver outra em execução. Ao finalizar, precisa registrar o que foi feito (mínimo de 3 caracteres) e pode anexar arquivos de até 8 MB no mesmo formulário. A validação acontece na interface e no banco; a O.S. não é concluída se a descrição for inválida ou se o envio de anexo falhar.
 
-### Chamar técnico pelo WhatsApp
+### Chamar técnico pelo app
 
-Administradores podem usar **Chamar técnico** em uma O.S. aberta para abrir a conversa do técnico responsável com uma mensagem automática já preenchida, identificando o administrador solicitante, o serviço e o horário agendado. O administrador ainda precisa revisar e tocar em **Enviar** no WhatsApp; o site não envia mensagens em segundo plano.
-
-Para enviar pelo número comercial da Cristec, o navegador precisa estar conectado a esse WhatsApp pelo próprio WhatsApp Web. O QR code de **Aparelhos conectados** é gerado e validado pelo WhatsApp, não pelo site. Esta integração de clique para conversar não armazena a sessão do WhatsApp nem exige uma API de envio. Os números configurados no código do site ficam visíveis a quem puder acessar os arquivos públicos; antes de publicar, confirme que os titulares autorizam essa exposição.
+Administradores podem tocar em **Avisar técnico** em uma O.S. aberta. O sistema envia ao técnico responsável uma notificação push com o nome de quem chamou, a O.S. e a solicitação para comparecer; o alerta não abre nem usa WhatsApp. Em ordens agendadas, a notificação permite iniciar a execução ou lembrar mais tarde. O técnico precisa ter ativado os avisos no aparelho. A entrega depende da conexão do dispositivo com o serviço de notificações do navegador e das permissões do sistema operacional.
 
 ### Atualização do banco para auditoria e duração
 
